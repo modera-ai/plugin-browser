@@ -1,0 +1,413 @@
+:root {
+  color-scheme: light dark;
+  --browser-ink: var(--settings-text);
+  --browser-muted: var(--settings-muted);
+  --browser-line: var(--settings-border);
+  --browser-card: var(--settings-card);
+  --browser-control: var(--settings-surface);
+  --browser-soft: var(--settings-hover);
+  --browser-accent: var(--settings-primary);
+}
+body {
+  margin: 0;
+  background: transparent;
+}
+.df-settings {
+  min-height: 100%;
+  color: var(--browser-ink);
+  background: transparent;
+}
+.df-settings > h2 {
+  color: var(--browser-ink);
+}
+.df-description,
+.df-muted {
+  color: var(--browser-muted) !important;
+}
+.browser-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 18px;
+  border: 1px solid var(--browser-line);
+  border-radius: 12px;
+  background: var(--settings-card);
+  box-shadow: none;
+  overflow: hidden;
+}
+.browser-metric {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+  padding: 16px;
+}
+.browser-metric + .browser-metric:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 13px;
+  bottom: 13px;
+  width: 1px;
+  background: var(--browser-line);
+}
+.browser-metric svg {
+  flex: 0 0 auto;
+  color: var(--browser-accent);
+}
+.browser-metric span {
+  min-width: 0;
+}
+.browser-metric strong,
+.browser-metric small {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.browser-metric strong {
+  font-size: 13px;
+}
+.browser-metric small {
+  margin-top: 2px;
+  color: var(--browser-muted);
+  font-size: 11px;
+}
+.browser-panel {
+  margin: 0 0 16px;
+  padding: 21px 22px;
+  border: 1px solid var(--browser-line);
+  border-radius: 12px;
+  background: var(--settings-card);
+  box-shadow: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+.browser-panel:hover {
+  border-color: color-mix(
+    in srgb,
+    var(--browser-accent) 20%,
+    var(--browser-line)
+  );
+  box-shadow: none;
+}
+.browser-panel .df-section-title {
+  color: var(--browser-ink);
+  font-size: 13px;
+  border: 0;
+  margin-bottom: 14px;
+  padding: 0;
+}
+.browser-start-panel .df-row {
+  max-width: 760px;
+}
+.browser-import-panel > .df-row {
+  margin-bottom: 14px;
+}
+.browser-data-card {
+  padding: 0 20px !important;
+  border-color: var(--browser-line) !important;
+  border-radius: 14px !important;
+  background: color-mix(
+    in srgb,
+    var(--browser-card) 76%,
+    transparent
+  ) !important;
+  box-shadow: none !important;
+}
+.browser-data-row {
+  padding: 15px 0;
+  border-bottom: 1px solid var(--browser-line);
+}
+.browser-data-row:last-child {
+  border-bottom: 0;
+}
+.browser-data-row > div {
+  min-width: 0;
+}
+.browser-data-row .df-muted {
+  margin-top: 3px;
+}
+.df-settings input:not([type="checkbox"]):not([type="radio"]),
+.df-settings select,
+.df-settings textarea {
+  border-color: var(--browser-line);
+  border-radius: 9px;
+  background: var(--browser-control);
+  color: var(--browser-ink);
+  transition:
+    border-color 0.18s,
+    box-shadow 0.18s;
+}
+.df-settings input:hover {
+  border-color: color-mix(
+    in srgb,
+    var(--browser-accent) 32%,
+    var(--browser-line)
+  );
+}
+.df-settings input:focus {
+  border-color: var(--browser-accent);
+  box-shadow: none;
+}
+.df-settings .df-button {
+  border-color: var(--browser-line);
+  border-radius: 9px;
+  background: var(--browser-control);
+  color: var(--browser-ink);
+  transition:
+    background 0.18s,
+    border-color 0.18s,
+    box-shadow 0.18s,
+    transform 0.18s;
+}
+.df-settings .df-button:hover:not(:disabled) {
+  border-color: color-mix(
+    in srgb,
+    var(--browser-accent) 24%,
+    var(--browser-line)
+  );
+  background: color-mix(
+    in srgb,
+    var(--browser-accent) 5%,
+    var(--browser-control)
+  );
+  box-shadow: none;
+}
+.df-settings .df-button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.df-settings .df-button.primary {
+  border-color: var(--browser-accent);
+  background: var(--browser-accent);
+  color: #fff;
+}
+.df-settings > .df-notice[role="status"] {
+  position: fixed;
+  z-index: 1000;
+  top: 10px;
+  left: 50%;
+  margin: 0;
+  padding: 9px 15px;
+  border: 1px solid color-mix(in srgb, #2fa36b 38%, var(--browser-line));
+  border-radius: 12px;
+  background: color-mix(in srgb, #2fa36b 14%, var(--browser-control));
+  color: #24935f;
+  box-shadow: none;
+  transform: translateX(-50%);
+  animation: browser-notice-in 0.18s ease both;
+}
+@keyframes browser-notice-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+}
+.df-import-dialog {
+  border-color: var(--browser-line) !important;
+  background: color-mix(
+    in srgb,
+    var(--browser-control) 96%,
+    transparent
+  ) !important;
+  backdrop-filter: blur(18px);
+  box-shadow: none !important;
+}
+.df-import-dialog .df-list-row {
+  border-color: var(--browser-line);
+  background: color-mix(in srgb, var(--browser-card) 76%, transparent);
+}
+@media (max-width: 700px) {
+  .browser-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .browser-metric:nth-child(3):before {
+    display: none;
+  }
+  .browser-metric:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--browser-line);
+  }
+  .browser-data-row {
+    align-items: flex-start;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .df-settings * {
+    animation: none !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+.browser-preferences {
+  padding: 0;
+  overflow: hidden;
+}
+.browser-setting-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px;
+}
+.browser-setting-row + .browser-setting-row {
+  border-top: 1px solid var(--browser-line);
+}
+.browser-setting-copy strong,
+.browser-setting-copy small {
+  display: block;
+}
+.browser-setting-copy strong {
+  font-size: 13px;
+}
+.browser-setting-copy small {
+  margin-top: 4px;
+  color: var(--browser-muted);
+  font-size: 11px;
+  line-height: 1.55;
+}
+.browser-setting-control {
+  width: min(100%, 520px);
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 5px;
+}
+.browser-setting-control > svg {
+  position: absolute;
+  z-index: 1;
+  top: 11px;
+  left: 12px;
+  color: var(--browser-muted);
+}
+.browser-setting-control input {
+  padding-left: 38px !important;
+}
+.browser-setting-control small {
+  color: var(--browser-muted);
+  font-size: 10px;
+}
+.browser-import-row > .df-button {
+  justify-self: start;
+}
+.browser-managers {
+  margin-top: 16px;
+  border: 1px solid var(--browser-line);
+  border-radius: 12px;
+  background: var(--settings-card);
+  box-shadow: none;
+  overflow: hidden;
+}
+.browser-managers > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 19px 22px 15px;
+  border-bottom: 1px solid var(--browser-line);
+}
+.browser-managers > header h3,
+.browser-managers > header p {
+  margin: 0;
+}
+.browser-managers > header h3 {
+  font-size: 13px;
+}
+.browser-managers > header p {
+  margin-top: 3px;
+  color: var(--browser-muted);
+  font-size: 11px;
+}
+.browser-managers > header svg {
+  color: var(--browser-accent);
+}
+.browser-manager-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.browser-manager-tile {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  min-height: 82px;
+  padding: 15px 18px;
+  border: 0;
+  border-right: 1px solid var(--browser-line);
+  border-bottom: 1px solid var(--browser-line);
+  background: transparent;
+  color: var(--browser-ink);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.18s,
+    transform 0.18s;
+}
+.browser-manager-tile:nth-child(2n) {
+  border-right: 0;
+}
+.browser-manager-tile:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+.browser-manager-tile:hover {
+  background: color-mix(in srgb, var(--browser-accent) 5%, transparent);
+}
+.browser-manager-tile:active {
+  transform: scale(0.985);
+}
+.browser-manager-tile > span:nth-child(2) {
+  min-width: 0;
+}
+.browser-manager-tile strong,
+.browser-manager-tile small {
+  display: block;
+}
+.browser-manager-tile strong {
+  font-size: 13px;
+}
+.browser-manager-tile small {
+  margin-top: 3px;
+  color: var(--browser-muted);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.browser-manager-tile > svg {
+  color: var(--browser-muted);
+  transition:
+    transform 0.18s,
+    color 0.18s;
+}
+.browser-manager-tile:hover > svg {
+  color: var(--browser-accent);
+  transform: translateX(2px);
+}
+.browser-manager-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  color: var(--browser-accent);
+  background: color-mix(in srgb, var(--browser-accent) 9%, transparent);
+}
+@media (max-width: 760px) {
+  .browser-setting-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .browser-import-row > .df-button {
+    justify-self: start;
+  }
+  .browser-manager-grid {
+    grid-template-columns: 1fr;
+  }
+  .browser-manager-tile,
+  .browser-manager-tile:nth-child(2n) {
+    border-right: 0;
+    border-bottom: 1px solid var(--browser-line);
+  }
+  .browser-manager-tile:last-child {
+    border-bottom: 0;
+  }
+}

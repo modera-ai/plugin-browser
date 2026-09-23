@@ -1,0 +1,29 @@
+{
+  "name": "@modera-plugin/browser",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Isolated side-panel browsing with scoped AI browser tools.",
+  "files": [
+    "plugin.json",
+    "dist",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "scripts": {
+    "build": "modera-plugin-build ."
+  },
+  "devDependencies": {
+    "@modera/plugin-build": "0.1.0",
+    "@modera/plugin-sdk": "0.1.0",
+    "@types/react-dom": "^19.1.9"
+  },
+  "dependencies": {
+    "lucide-react": "^1.17.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT"
+}

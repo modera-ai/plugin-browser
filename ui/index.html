@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Browser Preview</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <form id="toolbar" aria-label="Browser navigation">
+      <button type="button" id="back">←</button
+      ><button type="button" id="forward">→</button>
+      <button type="button" id="reload">↻</button>
+      <label class="address"
+        ><span aria-hidden="true">◎</span
+        ><input
+          id="url"
+          type="text"
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="URL"
+      /></label>
+      <button type="submit" id="go">↵</button
+      ><button type="button" id="external">↗</button
+      ><button type="button" id="new">＋</button>
+      <button type="button" id="bookmark">☆</button><button type="button" id="menu-button" aria-label="Browser menu">⋮</button>
+    </form>
+    <nav id="bookmarks" aria-label="Bookmarks"></nav>
+    <div id="status" role="status"></div>
+    <div id="findbar" hidden><input id="find-text" aria-label="Find in page"/><button id="find-close">×</button></div>
+    <div id="browser-menu" role="menu" hidden></div>
+    <main id="viewport">
+      <div id="empty">
+        <span class="globe">◎</span>
+        <h1 id="heading"></h1>
+        <p id="hint"></p>
+      </div>
+    </main>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>
