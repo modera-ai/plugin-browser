@@ -1,5 +1,10 @@
+// @ts-nocheck -- legacy DOM controller, bundled alongside the typed tooltip adapter.
+import { setTooltip } from './components/tooltips';
+async function boot() {
 const api = window.moderaPlugin;
 const $ = (id) => document.getElementById(id);
+// Mount before attaching legacy event handlers; subsequent updates retain the button.
+for (const [id, text] of Object.entries({back:'Back',forward:'Forward',external:'Open externally',new:'New tab',go:'Go',reload:'Reload',bookmark:'Bookmark page','menu-button':'Browser menu'})) setTooltip($(id),text);
 let state = { url: "", loading: false, error: "" };
 let zh = false;
 let menuOpen = false,
@@ -49,9 +54,9 @@ function paint(next) {
   $("forward").disabled = !next.canGoForward;
   $("external").disabled = !/^https?:/.test(next.url);
   $("reload").textContent = next.loading ? "×" : "↻";
-  $("reload").title = next.loading
+  setTooltip($("reload"), next.loading
     ? label("停止加载", "Stop loading")
-    : label("刷新", "Reload");
+    : label("刷新", "Reload"));
   const error = errors[next.error];
   $("status").className = next.error ? "error" : "";
   $("status").textContent = error
@@ -103,10 +108,10 @@ $("toolbar").addEventListener("submit", (event) => {
     });
 });
 for (const type of ["back", "forward", "external"])
-  $(type).onclick = () => void command({ type });
-$("reload").onclick = () =>
-  void command({ type: state.loading ? "stop" : "reload" });
-$("new").onclick = () => {
+  $(type).addEventListener("click", () => void command({ type }));
+$("reload").addEventListener("click", () =>
+  void command({ type: state.loading ? "stop" : "reload" }));
+$("new").addEventListener("click", () => {
   void api
     .openPanel(
       "modera.browser.preview",
@@ -115,7 +120,7 @@ $("new").onclick = () => {
     .catch(() => {
       $("status").textContent = label("无法打开面板", "Cannot open panel");
     });
-};
+});
 const snapshot = await api.snapshot();
 zh = snapshot.locale.startsWith("zh");
 document.documentElement.lang = zh ? "zh-CN" : "en";
@@ -126,7 +131,7 @@ for (const [id, cn, en] of [
   ["new", "新标签页", "New tab"],
   ["go", "前往", "Go"],
 ]) {
-  $(id).title = label(cn, en);
+  setTooltip($(id), label(cn, en));
   $(id).setAttribute("aria-label", label(cn, en));
 }
 $("url").placeholder = label("输入网址", "Enter a URL");
@@ -164,7 +169,6 @@ function showBookmarks(items) {
   for (const item of root.children) {
     const button = document.createElement("button");
     button.textContent = (item.children ? "▱ " : "") + item.title;
-    button.title = item.title;
     button.onclick = () =>
       item.children
         ? openItems(item.children, button, item.title)
@@ -179,7 +183,7 @@ function showBookmarks(items) {
     const more = document.createElement("button");
     more.textContent = "»";
     more.className = "bookmark-more";
-    more.title = label("更多书签", "More bookmarks");
+    more.setAttribute("aria-label", label("更多书签", "More bookmarks"));
     more.onclick = () =>
       openItems(overflow, more, label("更多书签", "More bookmarks"));
     bar.append(more);
@@ -187,8 +191,8 @@ function showBookmarks(items) {
   void layout();
 }
 showBookmarks(snapshot.view.data?.bookmarks);
-$("bookmark").title = label("收藏当前网页", "Bookmark page");
-$("bookmark").onclick = async () => {
+setTooltip($("bookmark"), label("收藏当前网页", "Bookmark page"));
+$("bookmark").addEventListener("click", async () => {
   if (!/^https?:/.test(state.url)) return;
   try {
     const next = await api.action(
@@ -201,7 +205,7 @@ $("bookmark").onclick = async () => {
   } catch {
     $("status").textContent = label("收藏失败", "Bookmark failed");
   }
-};
+});
 let refreshingBookmarks = false;
 let bookmarksDirty = false;
 api.onChanged(async () => {
@@ -361,8 +365,8 @@ async function browserMenu() {
     );
   await presentMenu($("menu-button"));
 }
-$("menu-button").onclick = () => (menuOpen ? closeMenu() : browserMenu());
-$("menu-button").title = label("浏览器菜单", "Browser menu");
+$("menu-button").addEventListener("click", () => (menuOpen ? closeMenu() : browserMenu()));
+setTooltip($("menu-button"), label("浏览器菜单", "Browser menu"));
 $("find-close").onclick = async () => {
   $("findbar").hidden = true;
   await command({ type: "find", text: "" });
@@ -386,3 +390,5 @@ new ResizeObserver(() => {
   showBookmarks(bookmarkItems);
   if (menuOpen) void closeMenu();
 }).observe($("bookmarks"));
+}
+void boot();
