@@ -1,8 +1,13 @@
 // @ts-nocheck -- legacy DOM controller, bundled alongside the typed tooltip adapter.
 import { setTooltip } from './components/tooltips';
+import { createBrowserMenu, createMenuItem, setIcon } from './components/browser-menu';
 async function boot() {
 const api = window.moderaPlugin;
 const $ = (id) => document.getElementById(id);
+for (const [id, icon] of Object.entries({back:"ArrowLeft",forward:"ArrowRight",reload:"RefreshCw",external:"ExternalLink",new:"Plus",go:"CornerDownLeft",bookmark:"Star","menu-button":"MoreHorizontal","find-close":"X"})) setIcon($(id), icon);
+setIcon(document.querySelector(".address > span"), "Globe", 14);
+setIcon(document.querySelector(".globe"), "Globe", 44);
+const renderMenu = createBrowserMenu($("browser-menu"), () => void closeMenu());
 // Mount before attaching legacy event handlers; subsequent updates retain the button.
 for (const [id, text] of Object.entries({back:'Back',forward:'Forward',external:'Open externally',new:'New tab',go:'Go',reload:'Reload',bookmark:'Bookmark page','menu-button':'Browser menu'})) setTooltip($(id),text);
 let state = { url: "", loading: false, error: "" };
@@ -53,7 +58,7 @@ function paint(next) {
   $("back").disabled = !next.canGoBack;
   $("forward").disabled = !next.canGoForward;
   $("external").disabled = !/^https?:/.test(next.url);
-  $("reload").textContent = next.loading ? "×" : "↻";
+  setIcon($("reload"), next.loading ? "X" : "RefreshCw");
   setTooltip($("reload"), next.loading
     ? label("停止加载", "Stop loading")
     : label("刷新", "Reload"));
@@ -227,7 +232,8 @@ api.onChanged(async () => {
 
 async function closeMenu() {
   menuOpen = false;
-  $("browser-menu").hidden = true;
+  renderMenu(null);
+  $("menu-button").setAttribute("aria-expanded", "false");
   await layout();
   $("viewport").style.backgroundImage = "";
 }
@@ -240,21 +246,12 @@ async function presentMenu(anchor) {
     menuOpen = true;
     await layout();
   }
-  const menu = $("browser-menu"),
-    rect = anchor.getBoundingClientRect();
-  menu.style.top = `${rect.bottom + 5}px`;
-  menu.style.left = `${Math.max(6, Math.min(rect.left, innerWidth - 300))}px`;
-  menu.hidden = false;
-  menu.querySelector("button,input")?.focus();
+  renderMenu(anchor);
+  $("menu-button").setAttribute("aria-expanded", "true");
+  $("browser-menu").querySelector("button,input")?.focus();
 }
-function menuItem(text, action) {
-  const b = document.createElement("button");
-  b.type = "button";
-  b.textContent = text;
-  b.setAttribute("role", "menuitem");
-  b.onclick = action;
-  return b;
-}
+function menuItem(text, action) { return createMenuItem(text, action); }
+
 async function openItems(items, anchor, title, back) {
   const menu = $("browser-menu");
   menu.replaceChildren();
@@ -313,6 +310,11 @@ async function browserMenu() {
         await command({ type: "zoom", factor: zoom });
       }),
     );
+  for (const [index, icon] of ["Minus", "Plus"].entries()) {
+    const button = line.querySelectorAll("button")[index];
+    button.setAttribute("aria-label", label(index ? "放大" : "缩小", index ? "Zoom in" : "Zoom out"));
+    setIcon(button, icon, 15);
+  }
   line.prepend(value);
   menu.append(line);
   const action = (type) => async () => {
@@ -382,7 +384,7 @@ document.addEventListener("pointerdown", (e) => {
     menuOpen &&
     !$("browser-menu").contains(e.target) &&
     !$("bookmarks").contains(e.target) &&
-    e.target !== $("menu-button")
+    !$("menu-button").contains(e.target)
   )
     void closeMenu();
 });
