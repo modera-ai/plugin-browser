@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import { SettingsPage, Button, frontend } from "@modera/plugin-sdk/react";
-import {
-  ArrowLeft,
-  Search,
-  Plus,
-  Pencil,
-  Trash2,
-  Eye,
-  EyeOff,
-  Folder,
-  Download,
-} from "lucide-react";
+import { ArrowLeftIcon as ArrowLeft } from "@phosphor-icons/react/dist/csr/ArrowLeft";
+import { MagnifyingGlassIcon as Search } from "@phosphor-icons/react/dist/csr/MagnifyingGlass";
+import { PlusIcon as Plus } from "@phosphor-icons/react/dist/csr/Plus";
+import { PencilIcon as Pencil } from "@phosphor-icons/react/dist/csr/Pencil";
+import { TrashIcon as Trash2 } from "@phosphor-icons/react/dist/csr/Trash";
+import { EyeIcon as Eye } from "@phosphor-icons/react/dist/csr/Eye";
+import { EyeSlashIcon as EyeOff } from "@phosphor-icons/react/dist/csr/EyeSlash";
+import { FolderIcon as Folder } from "@phosphor-icons/react/dist/csr/Folder";
+import { DownloadIcon as Download } from "@phosphor-icons/react/dist/csr/Download";
+
 import { settingsAction, useSettings } from "@modera/plugin-sdk/react";
 export type ManagerKind = "bookmarks" | "passwords" | "history" | "cookies";
 type Row = {

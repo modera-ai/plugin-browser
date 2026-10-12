@@ -1,14 +1,13 @@
 import { useState } from "react";
 import { Button, SettingsCard, frontend } from "@modera/plugin-sdk/react";
-import {
-  Bookmark,
-  KeyRound,
-  Trash2,
-  Eye,
-  EyeOff,
-  Download,
-  Search,
-} from "lucide-react";
+import { BookmarkIcon as Bookmark } from "@phosphor-icons/react/dist/csr/Bookmark";
+import { KeyIcon as KeyRound } from "@phosphor-icons/react/dist/csr/Key";
+import { TrashIcon as Trash2 } from "@phosphor-icons/react/dist/csr/Trash";
+import { EyeIcon as Eye } from "@phosphor-icons/react/dist/csr/Eye";
+import { EyeSlashIcon as EyeOff } from "@phosphor-icons/react/dist/csr/EyeSlash";
+import { DownloadIcon as Download } from "@phosphor-icons/react/dist/csr/Download";
+import { MagnifyingGlassIcon as Search } from "@phosphor-icons/react/dist/csr/MagnifyingGlass";
+
 import { useSettings, settingsAction } from "@modera/plugin-sdk/react";
 export type Summary = {
   passwordCount: number;

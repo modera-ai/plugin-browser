@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { ActionTile, Button, Dialog, DialogNotice, Input, Select, Switch, UiProvider } from "@modera/ui";
 import { Form, FormItem, SettingsPage, SettingsPanel, SettingsSummary } from "@modera/ui/settings";
-import { Bookmark, Cookie, Download, Globe, History, KeyRound, Upload } from "lucide-react";
+import { BookmarkIcon as Bookmark } from "@phosphor-icons/react/dist/csr/Bookmark";
+import { CookieIcon as Cookie } from "@phosphor-icons/react/dist/csr/Cookie";
+import { DownloadIcon as Download } from "@phosphor-icons/react/dist/csr/Download";
+import { GlobeIcon as Globe } from "@phosphor-icons/react/dist/csr/Globe";
+import { ClockCounterClockwiseIcon as History } from "@phosphor-icons/react/dist/csr/ClockCounterClockwise";
+import { KeyIcon as KeyRound } from "@phosphor-icons/react/dist/csr/Key";
+import { UploadIcon as Upload } from "@phosphor-icons/react/dist/csr/Upload";
 import { frontend, settingsAction, useSettings } from "@modera/plugin-sdk/react";
 import { BrowserManager, type ManagerKind } from "./manager-page";
 import { type Summary } from "./settings-management";
