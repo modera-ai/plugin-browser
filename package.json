@@ -1,6 +1,6 @@
 {
   "name": "@modera-plugin/browser",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Isolated side-panel browsing with scoped AI browser tools.",
   "files": [
