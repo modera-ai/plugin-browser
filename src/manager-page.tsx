@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { SettingsPage, Button, frontend } from "@modera/plugin-sdk/react";
+import { frontend } from "@modera/plugin-sdk/react";
+import { Button } from "@modera/ui";
+import { SettingsPage } from "@modera/ui/settings";
 import { ArrowLeftIcon as ArrowLeft } from "@phosphor-icons/react/dist/csr/ArrowLeft";
 import { MagnifyingGlassIcon as Search } from "@phosphor-icons/react/dist/csr/MagnifyingGlass";
 import { PlusIcon as Plus } from "@phosphor-icons/react/dist/csr/Plus";

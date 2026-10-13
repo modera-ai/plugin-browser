@@ -1,7 +1,2 @@
-.browser-settings-ui { min-height: 100vh; }
-.browser-data { margin-top: 24px; }
-.browser-data h2 { margin: 0; font-size: 16px; }
-.browser-data p { margin: 4px 0 16px; color: var(--mu-muted); font-size: 13px; }
-.browser-data-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.browser-settings-ui { min-height: 100dvh; }
 .browser-import-options { display: grid; gap: 14px; margin-top: 14px; }
-@media (max-width: 660px) { .browser-data-grid { grid-template-columns: 1fr; } }

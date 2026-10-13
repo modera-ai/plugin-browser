@@ -7,7 +7,7 @@ import { MinusIcon } from "@phosphor-icons/react/dist/csr/Minus";
 import * as Icons from "@modera/ui/icons";
 import "@modera/ui/styles.css";
 
-export function setIcon(element: HTMLElement, name: keyof typeof Icons, size = 18) {
+export function setIcon(element: HTMLElement, name: keyof typeof Icons | "Minus", size = 18) {
   const Icon = (name === "Minus" ? MinusIcon : Icons[name]) as React.ComponentType<{ size: number }>;
   element.innerHTML = renderToStaticMarkup(<Icon size={size} />);
 }

@@ -1,13 +1,9 @@
 import { useEffect, useState } from "react";
-import { ActionTile, Button, Dialog, DialogNotice, Input, Select, Switch, UiProvider } from "@modera/ui";
-import { Form, FormItem, SettingsPage, SettingsPanel, SettingsSummary } from "@modera/ui/settings";
-import { BookmarkIcon as Bookmark } from "@phosphor-icons/react/dist/csr/Bookmark";
-import { CookieIcon as Cookie } from "@phosphor-icons/react/dist/csr/Cookie";
+import { Button, Dialog, DialogNotice, Input, Select, Switch, UiProvider } from "@modera/ui";
+import { Form, FormItem, SettingsPage, SettingsPanel } from "@modera/ui/settings";
 import { DownloadIcon as Download } from "@phosphor-icons/react/dist/csr/Download";
 import { GlobeIcon as Globe } from "@phosphor-icons/react/dist/csr/Globe";
 import { ClockCounterClockwiseIcon as History } from "@phosphor-icons/react/dist/csr/ClockCounterClockwise";
-import { KeyIcon as KeyRound } from "@phosphor-icons/react/dist/csr/Key";
-import { UploadIcon as Upload } from "@phosphor-icons/react/dist/csr/Upload";
 import { frontend, settingsAction, useSettings } from "@modera/plugin-sdk/react";
 import { BrowserManager, type ManagerKind } from "./manager-page";
 import { type Summary } from "./settings-management";
@@ -37,12 +33,6 @@ export function BrowserSettings() {
   }, [!!s.config, route]);
   const source = sources.find((item) => item.id === selected);
   const managerRoute = ["bookmarks", "passwords", "history", "cookies"].includes(route);
-  const metrics = [
-    { icon: <KeyRound size={16} />, value: String(summary.passwordCount), label: t("已保存密码", "Saved passwords") },
-    { icon: <Cookie size={16} />, value: String(summary.cookieCount), label: t("本机 Cookie", "Browser cookies") },
-    { icon: <Bookmark size={16} />, value: String(summary.bookmarkCount), label: t("书签", "Bookmarks") },
-    { icon: <Globe size={16} />, value: String(s.values.startPage || t("空白页", "Blank page")), label: t("起始页", "Start page"), title: String(s.values.startPage ?? "") },
-  ];
   const canImport = !!source && !s.busy && closedBrowser && Object.entries(choices).some(([key, enabled]) => enabled && source[key as keyof typeof choices]);
   const importSelected = () => void s.run(async () => {
     if (!source) return;
@@ -58,29 +48,27 @@ export function BrowserSettings() {
       `Imported ${result.passwords} passwords, ${result.cookies} cookies, ${result.bookmarks} bookmarks; skipped ${result.skipped}.`,
     ) + result.notes.join(" "));
   });
-  return <UiProvider theme="system" locale={s.zh ? "zh-CN" : "en"} className="browser-settings-ui">
+  return <UiProvider theme={s.snapshot?.theme?.mode ?? "system"} locale={s.zh ? "zh-CN" : "en"} className="browser-settings-ui mu-settings-codex">
     {!s.config ? <SettingsPage title={t("浏览器设置", "Browser settings")}><DialogNotice tone={s.error ? "error" : "default"}>{s.error || t("正在加载…", "Loading…")}</DialogNotice></SettingsPage>
     : managerRoute ? <BrowserManager kind={route as ManagerKind} s={s} onBack={() => { setRoute(""); void s.run(refresh); }} />
-    : <SettingsPage title={t("浏览器设置", "Browser settings")} description={t("设置起始页，查看本机浏览数据。", "Set a start page and review local browser data.")}>
-      <SettingsSummary items={metrics} />
+    : <SettingsPage title={t("浏览器设置", "Browser settings")} description={t("设置起始页，查看本机浏览数据。", "Set a start page and review local browser data.")} actions={<span className="settings-save-feedback" role="status" aria-live="polite">{s.failed || s.error ? "" : s.message}</span>}>
       <SettingsPanel variant="preferences" title={t("偏好设置", "Preferences")}>
         <Form columns={1}>
-          <FormItem variant="inline" label={t("起始页", "Start page")} description={t("新标签页打开时显示；留空则显示空白页。", "Shown in new tabs; leave empty for a blank page.")}><Input label={t("起始页", "Start page")} hideLabel type="url" placeholder="https://example.com" leftIcon={<Globe size={15} />} value={String(s.values.startPage ?? "")} onChange={(value) => s.setValues((current) => ({ ...current, startPage: value }))} onKeyDown={(event) => { if (event.key === "Enter") event.currentTarget.blur(); }} /></FormItem>
+          <FormItem variant="inline" className="settings-path-row" label={t("起始页", "Start page")} description={t("新标签页打开时显示；留空则显示空白页。", "Shown in new tabs; leave empty for a blank page.")}><Input label={t("起始页", "Start page")} hideLabel type="url" placeholder="https://example.com" leftIcon={<Globe size={15} />} value={String(s.values.startPage ?? "")} onChange={(value) => s.setValues((current) => ({ ...current, startPage: value }))} onKeyDown={(event) => { if (event.key === "Enter") event.currentTarget.blur(); }} /></FormItem>
           <FormItem variant="inline" label={t("从其他浏览器导入", "Import from another browser")} description={t("选择浏览器配置和需要迁移的数据。", "Choose a browser profile and the data to bring over.")}><Button variant="outline" disabled={s.busy} onClick={() => void s.run(scan)}><Download size={14} />{t("打开导入", "Open import")}</Button></FormItem>
         </Form>
       </SettingsPanel>
-      {(s.message || s.error) && <DialogNotice tone={s.failed || s.error ? "error" : "default"}>{s.error || s.message}</DialogNotice>}
-      <section className="browser-data">
-        <header><h2>{t("浏览数据", "Browsing data")}</h2><p>{t("管理浏览器中保存的个人数据。", "Manage personal data stored by the browser.")}</p></header>
-        <div className="browser-data-grid">
-          <ActionTile icon={<Bookmark size={18} />} title={t("书签管理器", "Bookmarks")} description={t("整理文件夹、搜索和编辑收藏", "Organize, search and edit bookmarks")} onClick={() => setRoute("bookmarks")} />
-          <ActionTile icon={<KeyRound size={18} />} title={t("密码管理器", "Passwords")} description={t("管理本机加密保存的密码", "Manage locally encrypted passwords")} onClick={() => setRoute("passwords")} />
-          <ActionTile icon={<History size={18} />} title={t("浏览历史", "History")} description={t("查看和清理访问记录", "Review and clear browsing activity")} onClick={() => setRoute("history")} />
-          <ActionTile icon={<Upload size={18} />} title={t("Cookie 导入", "Import cookies")} description={t("导入浏览器导出的 JSON 文件", "Import an exported browser JSON file")} onClick={() => setRoute("cookies")} />
-        </div>
-      </section>
+      {(s.failed || s.error) && <DialogNotice tone={s.failed || s.error ? "error" : "default"}>{s.error || s.message}</DialogNotice>}
+      <SettingsPanel variant="preferences" title={t("浏览数据", "Browsing data")}>
+        <Form>
+          <FormItem variant="inline" label={t("书签", "Bookmarks")} description={t(`已保存 ${summary.bookmarkCount} 条书签，支持文件夹、搜索和编辑。`, `${summary.bookmarkCount} saved bookmarks. Organize folders, search and edit.`)}><Button variant="outline" onClick={() => setRoute("bookmarks")}>{t("管理书签", "Manage bookmarks")}</Button></FormItem>
+          <FormItem variant="inline" label={t("密码", "Passwords")} description={t(`本机加密保存 ${summary.passwordCount} 条密码。`, `${summary.passwordCount} locally encrypted passwords.`)}><Button variant="outline" onClick={() => setRoute("passwords")}>{t("管理密码", "Manage passwords")}</Button></FormItem>
+          <FormItem variant="inline" label={t("浏览历史", "History")} description={t("查看和清理访问记录。", "Review and clear browsing activity.")}><Button variant="outline" onClick={() => setRoute("history")}>{t("查看历史", "View history")}</Button></FormItem>
+          <FormItem variant="inline" label="Cookie" description={t(`本机已有 ${summary.cookieCount} 个 Cookie；支持导入导出的 JSON 文件。`, `${summary.cookieCount} local cookies. Import an exported JSON file.`)}><Button variant="outline" onClick={() => setRoute("cookies")}>{t("导入 Cookie", "Import cookies")}</Button></FormItem>
+        </Form>
+      </SettingsPanel>
       <Dialog open={importOpen} onOpenChange={setImportOpen} title={t("从浏览器导入", "Import from browser")} description={t("选择浏览器及要导入的数据。", "Choose a browser and the data to import.")} footer={<><Button variant="quiet" onClick={() => setImportOpen(false)}>{t("取消", "Cancel")}</Button><Button variant="primary" disabled={!canImport} onClick={importSelected}><Download size={14} />{s.busy ? t("处理中…", "Working…") : t("导入所选", "Import selected")}</Button></>}>
-        {scanned && sources.length === 0 ? <DialogNotice>{t("没有找到可导入的 Chrome / Edge 配置档案。", "No Chrome / Edge profiles found.")}</DialogNotice> : sources.length > 0 && <Form><FormItem label={t("浏览器配置", "Browser profile")}><Select label={t("浏览器配置", "Browser profile")} value={selected} onValueChange={setSelected} options={sources.map((item) => ({ value: item.id, label: `${item.name} · ${item.account || item.profile}`, description: t(`密码 ${item.passwords} 条 · Cookie ${item.cookies} 个 · 书签 ${item.bookmarks} 条`, `${item.passwords} passwords · ${item.cookies} cookies · ${item.bookmarks} bookmarks`) }))} /></FormItem></Form>}
+        {scanned && sources.length === 0 ? <DialogNotice>{t("没有找到可导入的 Chrome / Edge 配置档案。", "No Chrome / Edge profiles found.")}</DialogNotice> : sources.length > 0 && <Form><FormItem variant="inline" label={t("浏览器配置", "Browser profile")}><Select label={t("浏览器配置", "Browser profile")} value={selected} onValueChange={setSelected} options={sources.map((item) => ({ value: item.id, label: `${item.name} · ${item.account || item.profile}`, description: t(`密码 ${item.passwords} 条 · Cookie ${item.cookies} 个 · 书签 ${item.bookmarks} 条`, `${item.passwords} passwords · ${item.cookies} cookies · ${item.bookmarks} bookmarks`) }))} /></FormItem></Form>}
         {source && <div className="browser-import-options">
           <DialogNotice>{t("导入前请关闭所选浏览器，确保数据库可读取且数据完整。", "Close the selected browser before importing to keep its database readable and complete.")}</DialogNotice>
           <Form>
