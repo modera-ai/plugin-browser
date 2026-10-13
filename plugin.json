@@ -4,7 +4,7 @@
   "activationScope": "scoped",
   "id": "modera.browser",
   "name": "Browser",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Browse pages in an isolated side panel with scoped AI browser tools.",
   "author": "Modera",
   "category": "web",
