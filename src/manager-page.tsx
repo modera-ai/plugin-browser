@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { frontend } from "@modera/plugin-sdk/react";
 import { Button } from "@modera/ui";
 import { SettingsPage } from "@modera/ui/settings";
-import { ArrowLeftIcon as ArrowLeft } from "@phosphor-icons/react/dist/csr/ArrowLeft";
 import { MagnifyingGlassIcon as Search } from "@phosphor-icons/react/dist/csr/MagnifyingGlass";
 import { PlusIcon as Plus } from "@phosphor-icons/react/dist/csr/Plus";
 import { PencilIcon as Pencil } from "@phosphor-icons/react/dist/csr/Pencil";
@@ -33,11 +32,9 @@ type Data = {
 export function BrowserManager({
   kind,
   s,
-  onBack,
 }: {
   kind: ManagerKind;
   s: ReturnType<typeof useSettings>;
-  onBack: () => void;
 }) {
   const t = (cn: string, en: string) => (s.zh ? cn : en);
   const title = {
@@ -205,17 +202,7 @@ export function BrowserManager({
       groups.set(date, [...(groups.get(date) ?? []), item]);
     }
   return (
-    <SettingsPage title={title}>
-      <style>{managerStyle}</style>
-      <nav className="bm-crumb">
-        <Button onClick={onBack}>
-          <ArrowLeft size={14} />
-          {t("浏览器设置", "Browser settings")}
-        </Button>
-        <span>› {title}</span>
-      </nav>
-      <p className="df-description">
-        {kind === "bookmarks"
+    <SettingsPage title={title} description={kind === "bookmarks"
           ? t(
               "按文件夹整理收藏；导入时保留原有目录。",
               "Organize bookmarks in folders; imports preserve their hierarchy.",
@@ -233,8 +220,9 @@ export function BrowserManager({
               : t(
                   "选择从浏览器导出的 Cookie JSON 文件，支持数组或含 cookies 数组的对象。",
                   "Select an exported cookie JSON array or an object containing a cookies array.",
-                )}
-      </p>
+                )}>
+      <style>{managerStyle}</style>
+
       {kind === "cookies" ? (
         <div className="df-card">
           <h3>{t("从文件导入", "Import from file")}</h3>

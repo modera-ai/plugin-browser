@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Dialog, DialogNotice, Input, Select, Switch, UiProvider } from "@modera/ui";
-import { Form, FormItem, SettingsPage, SettingsPanel } from "@modera/ui/settings";
+import { Form, FormItem, SettingsPage, SettingsPanel, SettingsBreadcrumbs } from "@modera/ui/settings";
 import { DownloadIcon as Download } from "@phosphor-icons/react/dist/csr/Download";
 import { GlobeIcon as Globe } from "@phosphor-icons/react/dist/csr/Globe";
 import { ClockCounterClockwiseIcon as History } from "@phosphor-icons/react/dist/csr/ClockCounterClockwise";
@@ -14,7 +14,10 @@ export function BrowserSettings() {
   const s = useSettings({ autoSave: true });
   const t = (zh: string, en: string) => s.zh ? zh : en;
   const [summary, setSummary] = useState<Summary>({ passwordCount: 0, cookieCount: 0, bookmarkCount: 0, passwords: [], bookmarks: [] });
-  const [route, setRoute] = useState(window.location.hash.slice(1));
+  const initialRoute = window.location.hash.slice(1);
+  const [navigation, setNavigation] = useState({ entries: initialRoute ? ["", initialRoute] : [""], index: initialRoute ? 1 : 0 });
+  const route = navigation.entries[navigation.index]!;
+  const setRoute = (next: string) => setNavigation(current => current.entries[current.index] === next ? current : ({ entries: [...current.entries.slice(0, current.index + 1), next], index: current.index + 1 }));
   const [importOpen, setImportOpen] = useState(false);
   const [sources, setSources] = useState<Source[]>([]);
   const [selected, setSelected] = useState("");
@@ -29,7 +32,7 @@ export function BrowserSettings() {
   useEffect(() => { void frontend().ready().catch(() => {}); }, []);
   useEffect(() => { if (s.config && !route) void s.run(refresh); }, [!!s.config]);
   useEffect(() => {
-    if (s.config && route === "import") { setRoute(""); void s.run(scan); }
+    if (s.config && route === "import") { setNavigation({ entries: [""], index: 0 }); void s.run(scan); }
   }, [!!s.config, route]);
   const source = sources.find((item) => item.id === selected);
   const managerRoute = ["bookmarks", "passwords", "history", "cookies"].includes(route);
@@ -49,8 +52,13 @@ export function BrowserSettings() {
     ) + result.notes.join(" "));
   });
   return <UiProvider theme={s.snapshot?.theme?.mode ?? "system"} locale={s.zh ? "zh-CN" : "en"} className="browser-settings-ui mu-settings-codex">
+    {managerRoute && <SettingsBreadcrumbs items={[
+      { label: t("设置", "Settings") },
+      { label: t("浏览器", "Browser"), onSelect: () => { setRoute(""); void s.run(refresh); } },
+      ...(managerRoute ? [{ label: ({ bookmarks: t("书签管理器", "Bookmarks"), passwords: t("密码管理器", "Passwords"), history: t("浏览历史", "History"), cookies: t("Cookie 导入", "Import cookies") } as Record<string,string>)[route]! }] : []),
+    ]} onBack={navigation.index > 0 ? () => setNavigation(current => ({ ...current, index: current.index - 1 })) : undefined} onForward={navigation.index + 1 < navigation.entries.length ? () => setNavigation(current => ({ ...current, index: current.index + 1 })) : undefined} />}
     {!s.config ? <SettingsPage title={t("浏览器设置", "Browser settings")}><DialogNotice tone={s.error ? "error" : "default"}>{s.error || t("正在加载…", "Loading…")}</DialogNotice></SettingsPage>
-    : managerRoute ? <BrowserManager kind={route as ManagerKind} s={s} onBack={() => { setRoute(""); void s.run(refresh); }} />
+    : managerRoute ? <BrowserManager kind={route as ManagerKind} s={s} />
     : <SettingsPage title={t("浏览器设置", "Browser settings")} description={t("设置起始页，查看本机浏览数据。", "Set a start page and review local browser data.")} actions={<span className="settings-save-feedback" role="status" aria-live="polite">{s.failed || s.error ? "" : s.message}</span>}>
       <SettingsPanel variant="preferences" title={t("偏好设置", "Preferences")}>
         <Form columns={1}>
@@ -61,10 +69,10 @@ export function BrowserSettings() {
       {(s.failed || s.error) && <DialogNotice tone={s.failed || s.error ? "error" : "default"}>{s.error || s.message}</DialogNotice>}
       <SettingsPanel variant="preferences" title={t("浏览数据", "Browsing data")}>
         <Form>
-          <FormItem variant="inline" label={t("书签", "Bookmarks")} description={t(`已保存 ${summary.bookmarkCount} 条书签，支持文件夹、搜索和编辑。`, `${summary.bookmarkCount} saved bookmarks. Organize folders, search and edit.`)}><Button variant="outline" onClick={() => setRoute("bookmarks")}>{t("管理书签", "Manage bookmarks")}</Button></FormItem>
-          <FormItem variant="inline" label={t("密码", "Passwords")} description={t(`本机加密保存 ${summary.passwordCount} 条密码。`, `${summary.passwordCount} locally encrypted passwords.`)}><Button variant="outline" onClick={() => setRoute("passwords")}>{t("管理密码", "Manage passwords")}</Button></FormItem>
-          <FormItem variant="inline" label={t("浏览历史", "History")} description={t("查看和清理访问记录。", "Review and clear browsing activity.")}><Button variant="outline" onClick={() => setRoute("history")}>{t("查看历史", "View history")}</Button></FormItem>
-          <FormItem variant="inline" label="Cookie" description={t(`本机已有 ${summary.cookieCount} 个 Cookie；支持导入导出的 JSON 文件。`, `${summary.cookieCount} local cookies. Import an exported JSON file.`)}><Button variant="outline" onClick={() => setRoute("cookies")}>{t("导入 Cookie", "Import cookies")}</Button></FormItem>
+          <FormItem variant="inline" label={t("书签", "Bookmarks")} description={t(`已保存 ${summary.bookmarkCount} 条书签，支持文件夹、搜索和编辑。`, `${summary.bookmarkCount} saved bookmarks. Organize folders, search and edit.`)}><Button variant="outline" onClick={() => setRoute("bookmarks")}>{t("管理", "Manage")}</Button></FormItem>
+          <FormItem variant="inline" label={t("密码", "Passwords")} description={t(`本机加密保存 ${summary.passwordCount} 条密码。`, `${summary.passwordCount} locally encrypted passwords.`)}><Button variant="outline" onClick={() => setRoute("passwords")}>{t("管理", "Manage")}</Button></FormItem>
+          <FormItem variant="inline" label={t("浏览历史", "History")} description={t("查看和清理访问记录。", "Review and clear browsing activity.")}><Button variant="outline" onClick={() => setRoute("history")}>{t("管理", "Manage")}</Button></FormItem>
+          <FormItem variant="inline" label="Cookie" description={t(`本机已有 ${summary.cookieCount} 个 Cookie；支持导入导出的 JSON 文件。`, `${summary.cookieCount} local cookies. Import an exported JSON file.`)}><Button variant="outline" onClick={() => setRoute("cookies")}>{t("管理", "Manage")}</Button></FormItem>
         </Form>
       </SettingsPanel>
       <Dialog open={importOpen} onOpenChange={setImportOpen} title={t("从浏览器导入", "Import from browser")} description={t("选择浏览器及要导入的数据。", "Choose a browser and the data to import.")} footer={<><Button variant="quiet" onClick={() => setImportOpen(false)}>{t("取消", "Cancel")}</Button><Button variant="primary" disabled={!canImport} onClick={importSelected}><Download size={14} />{s.busy ? t("处理中…", "Working…") : t("导入所选", "Import selected")}</Button></>}>
