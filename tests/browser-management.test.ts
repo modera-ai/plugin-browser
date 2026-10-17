@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { BrowserDataActions } from "../src/data/actions";
 import { bookmarksFromJson } from "../src/data/profiles";
-import type { PluginContext } from "@modera/contracts";
+import type { PluginContext } from "@pal/contracts";
 const roots: string[] = [];
 afterEach(async () => {
   for (const root of roots.splice(0))

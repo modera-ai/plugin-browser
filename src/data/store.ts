@@ -1,7 +1,7 @@
 import { readFile, writeFile, rename, unlink } from "node:fs/promises";
 import { join } from "node:path";
 import { randomUUID } from "node:crypto";
-import type { PluginContext } from "@modera/plugin-sdk";
+import type { PluginContext } from "@pal/plugin-sdk";
 import type { Bookmark } from "./profiles";
 export interface Password {
   id: string;

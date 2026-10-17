@@ -9,7 +9,7 @@ import {
   BrowserDataActions,
   parsePasswordCsv,
 } from "../src/data/actions";
-import type { PluginContext } from "@modera/contracts";
+import type { PluginContext } from "@pal/contracts";
 const roots: string[] = [];
 it("decrypts supported Chromium ciphertext and reports App-Bound records", async () => {
   const key = randomBytes(32),

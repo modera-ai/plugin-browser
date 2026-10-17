@@ -5,7 +5,7 @@ import type {
   ToolContribution,
   WebPageCommand,
   WebPageInfo,
-} from "@modera/plugin-sdk";
+} from "@pal/plugin-sdk";
 import { definitions } from "./definitions";
 import {
   pointScript,

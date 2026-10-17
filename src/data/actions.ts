@@ -1,7 +1,7 @@
 import { readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { createHash } from "node:crypto";
-import type { PluginContext } from "@modera/plugin-sdk";
+import type { PluginContext } from "@pal/plugin-sdk";
 import {
   scanProfiles,
   bookmarkFile,

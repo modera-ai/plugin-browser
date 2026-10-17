@@ -2,7 +2,7 @@
 import { setTooltip } from './components/tooltips';
 import { createBrowserMenu, createMenuItem, setIcon } from './components/browser-menu';
 async function boot() {
-const api = window.moderaPlugin;
+const api = window.palPlugin;
 const $ = (id) => document.getElementById(id);
 for (const [id, icon] of Object.entries({back:"ArrowLeft",forward:"ArrowRight",reload:"RefreshCw",external:"ExternalLink",new:"Plus",go:"CornerDownLeft",bookmark:"Star","menu-button":"MoreHorizontal","find-close":"X"})) setIcon($(id), icon);
 setIcon(document.querySelector(".address > span"), "Globe", 14);
@@ -49,7 +49,7 @@ function paint(next) {
   ) {
     lastVisit = next.url + next.title;
     void api
-      .action("visit", JSON.stringify({ url: next.url, title: next.title }))
+      .commands.execute("modera.browser.visit", { url: next.url, title: next.title })
       .catch(() => {});
   }
 
@@ -118,10 +118,7 @@ $("reload").addEventListener("click", () =>
   void command({ type: state.loading ? "stop" : "reload" }));
 $("new").addEventListener("click", () => {
   void api
-    .openPanel(
-      "modera.browser.preview",
-      JSON.stringify({ key: crypto.randomUUID(), url: "" }),
-    )
+    .commands.execute("modera.browser.new-tab", {})
     .catch(() => {
       $("status").textContent = label("无法打开面板", "Cannot open panel");
     });
@@ -200,15 +197,12 @@ setTooltip($("bookmark"), label("收藏当前网页", "Bookmark page"));
 $("bookmark").addEventListener("click", async () => {
   if (!/^https?:/.test(state.url)) return;
   try {
-    const next = await api.action(
-      "bookmark",
-      JSON.stringify({ url: state.url, title: state.title || state.url }),
-    );
+    const next = await api.commands.execute("modera.browser.bookmark", { url: state.url, title: state.title || state.url });
     showBookmarks(
-      next.view?.data?.bookmarks ?? (await api.snapshot()).view.data?.bookmarks,
+      next.bookmarks ?? (await api.snapshot()).view.data?.bookmarks,
     );
   } catch {
-    $("status").textContent = label("收藏失败", "Bookmark failed");
+    void api.toast.show({ level: "error", text: label("收藏失败", "Bookmark failed") });
   }
 });
 let refreshingBookmarks = false;

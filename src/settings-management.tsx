@@ -1,5 +1,6 @@
+import { browserData } from "./data-command";
 import { useState } from "react";
-import { Button, SettingsCard, frontend } from "@modera/plugin-sdk/react";
+import { Button, SettingsCard, frontend } from "@pal/plugin-sdk/react";
 import { BookmarkIcon as Bookmark } from "@phosphor-icons/react/dist/csr/Bookmark";
 import { KeyIcon as KeyRound } from "@phosphor-icons/react/dist/csr/Key";
 import { TrashIcon as Trash2 } from "@phosphor-icons/react/dist/csr/Trash";
@@ -8,7 +9,7 @@ import { EyeSlashIcon as EyeOff } from "@phosphor-icons/react/dist/csr/EyeSlash"
 import { DownloadIcon as Download } from "@phosphor-icons/react/dist/csr/Download";
 import { MagnifyingGlassIcon as Search } from "@phosphor-icons/react/dist/csr/MagnifyingGlass";
 
-import { useSettings, settingsAction } from "@modera/plugin-sdk/react";
+import { useSettings } from "@pal/plugin-sdk/react";
 export type Summary = {
   passwordCount: number;
   cookieCount: number;
@@ -31,7 +32,7 @@ export function DataManagement({
   const [page, setPage] = useState(0);
   const refresh = async (next = page) => {
     onSummary(
-      await settingsAction<Summary>("dataSummary", { query, page: next }),
+      await browserData<Summary>("dataSummary", { query, page: next }),
     );
     setPage(next);
   };
@@ -67,7 +68,7 @@ export function DataManagement({
               void s.run(async () => {
                 const path = await frontend().settings.pickFile();
                 if (!path) return;
-                const result = await settingsAction<{ imported: number; skipped: number }>(
+                const result = await browserData<{ imported: number; skipped: number }>(
                   "importPasswordCsv",
                   { path },
                 );
@@ -111,7 +112,7 @@ export function DataManagement({
                     else
                       setVisible({
                         id: p.id,
-                        password: await settingsAction<string>(
+                        password: await browserData<string>(
                           "revealPassword",
                           { id: p.id },
                         ),
@@ -130,7 +131,7 @@ export function DataManagement({
                 disabled={s.busy}
                 onClick={() =>
                   void s.run(async () => {
-                    await settingsAction("removePassword", { id: p.id });
+                    await browserData("removePassword", { id: p.id });
                     setVisible(undefined);
                     await refresh();
                   })
@@ -171,7 +172,7 @@ export function DataManagement({
                 aria-label={t("删除书签", "Delete bookmark")}
                 onClick={() =>
                   void s.run(async () => {
-                    await settingsAction("removeBookmark", { id: b.id });
+                    await browserData("removeBookmark", { id: b.id });
                     await refresh();
                   })
                 }

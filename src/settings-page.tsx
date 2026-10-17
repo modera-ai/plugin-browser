@@ -1,10 +1,11 @@
+import { browserData } from "./data-command";
 import { useEffect, useState } from "react";
-import { Button, Dialog, DialogNotice, Input, Select, Switch, UiProvider } from "@modera/ui";
-import { Form, FormItem, SettingsPage, SettingsPanel, SettingsBreadcrumbs } from "@modera/ui/settings";
+import { Button, Dialog, DialogNotice, Input, Select, Switch, UiProvider } from "@pal/ui";
+import { Form, FormItem, SettingsPage, SettingsPanel, SettingsBreadcrumbs } from "@pal/ui/settings";
 import { DownloadIcon as Download } from "@phosphor-icons/react/dist/csr/Download";
 import { GlobeIcon as Globe } from "@phosphor-icons/react/dist/csr/Globe";
 import { ClockCounterClockwiseIcon as History } from "@phosphor-icons/react/dist/csr/ClockCounterClockwise";
-import { frontend, settingsAction, useSettings } from "@modera/plugin-sdk/react";
+import { frontend, useSettings } from "@pal/plugin-sdk/react";
 import { BrowserManager, type ManagerKind } from "./manager-page";
 import { type Summary } from "./settings-management";
 
@@ -24,9 +25,9 @@ export function BrowserSettings() {
   const [scanned, setScanned] = useState(false);
   const [closedBrowser, setClosedBrowser] = useState(false);
   const [choices, setChoices] = useState({ passwords: true, cookies: false, bookmarks: true });
-  const refresh = async () => setSummary(await settingsAction<Summary>("dataSummary"));
+  const refresh = async () => setSummary(await browserData<Summary>("dataSummary"));
   const scan = async () => {
-    const found = await settingsAction<Source[]>("scanBrowsers");
+    const found = await browserData<Source[]>("scanBrowsers");
     setSources(found); setSelected(found[0]?.id ?? ""); setScanned(true); setClosedBrowser(false); setImportOpen(true);
   };
   useEffect(() => { void frontend().ready().catch(() => {}); }, []);
@@ -39,7 +40,7 @@ export function BrowserSettings() {
   const canImport = !!source && !s.busy && closedBrowser && Object.entries(choices).some(([key, enabled]) => enabled && source[key as keyof typeof choices]);
   const importSelected = () => void s.run(async () => {
     if (!source) return;
-    const result = await settingsAction<{ passwords: number; cookies: number; bookmarks: number; skipped: number; notes: string[] }>("importSelected", {
+    const result = await browserData<{ passwords: number; cookies: number; bookmarks: number; skipped: number; notes: string[] }>("importSelected", {
       source: source.id,
       passwords: choices.passwords && !!source.passwords,
       cookies: choices.cookies && !!source.cookies,

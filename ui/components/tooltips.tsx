@@ -1,7 +1,7 @@
-import { Tooltip } from '@modera/ui/tooltip';
+import { Tooltip } from '@pal/ui/tooltip';
 import { createRoot, type Root } from 'react-dom/client';
 import { flushSync } from 'react-dom';
-import '@modera/ui/tooltip.css';
+import '@pal/ui/tooltip.css';
 
 const roots = new WeakMap<HTMLButtonElement, Root>();
 /** Adapt existing DOM buttons without duplicating the UI library's tooltip. */

@@ -1,5 +1,5 @@
 import manifest from "../plugin.json";
-import { declaredTools } from "@modera/plugin-sdk";
+import { declaredTools } from "@pal/plugin-sdk";
 
 /**
  * Tool metadata declared in `plugin.json`, in declaration order.

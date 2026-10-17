@@ -1,11 +1,11 @@
 import { createRoot } from "react-dom/client";
 import { flushSync } from "react-dom";
 import { renderToStaticMarkup } from "react-dom/server.browser";
-import { MenuAction, MenuPanel, PopoverMorph, UiProvider } from "@modera/ui";
+import { MenuAction, MenuPanel, PopoverMorph, UiProvider } from "@pal/ui";
 import { useLayoutEffect, useRef } from "react";
 import { MinusIcon } from "@phosphor-icons/react/dist/csr/Minus";
-import * as Icons from "@modera/ui/icons";
-import "@modera/ui/styles.css";
+import * as Icons from "@pal/ui/icons";
+import "@pal/ui/styles.css";
 
 export function setIcon(element: HTMLElement, name: keyof typeof Icons | "Minus", size = 18) {
   const Icon = (name === "Minus" ? MinusIcon : Icons[name]) as React.ComponentType<{ size: number }>;

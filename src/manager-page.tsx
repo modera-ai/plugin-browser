@@ -1,7 +1,8 @@
+import { browserData } from "./data-command";
 import { useEffect, useState } from "react";
-import { frontend } from "@modera/plugin-sdk/react";
-import { Button } from "@modera/ui";
-import { SettingsPage } from "@modera/ui/settings";
+import { frontend } from "@pal/plugin-sdk/react";
+import { Button } from "@pal/ui";
+import { SettingsPage } from "@pal/ui/settings";
 import { MagnifyingGlassIcon as Search } from "@phosphor-icons/react/dist/csr/MagnifyingGlass";
 import { PlusIcon as Plus } from "@phosphor-icons/react/dist/csr/Plus";
 import { PencilIcon as Pencil } from "@phosphor-icons/react/dist/csr/Pencil";
@@ -11,7 +12,7 @@ import { EyeSlashIcon as EyeOff } from "@phosphor-icons/react/dist/csr/EyeSlash"
 import { FolderIcon as Folder } from "@phosphor-icons/react/dist/csr/Folder";
 import { DownloadIcon as Download } from "@phosphor-icons/react/dist/csr/Download";
 
-import { settingsAction, useSettings } from "@modera/plugin-sdk/react";
+import { useSettings } from "@pal/plugin-sdk/react";
 export type ManagerKind = "bookmarks" | "passwords" | "history" | "cookies";
 type Row = {
   id: string;
@@ -55,9 +56,9 @@ export function BrowserManager({
   const [revealed, setRevealed] = useState<{ id: string; password: string }>();
   const reload = async () => {
     if (kind === "history")
-      setRows(await settingsAction<Row[]>("history", { query: filter, page }));
+      setRows(await browserData<Row[]>("history", { query: filter, page }));
     else if (kind !== "cookies") {
-      const data = await settingsAction<Data>("dataSummary", {
+      const data = await browserData<Data>("dataSummary", {
         query: filter,
         page,
         ...(folder === undefined ? {} : { folder }),
@@ -83,8 +84,8 @@ export function BrowserManager({
       )
         return;
       if (kind === "history")
-        await settingsAction("removeHistory", { ids: selected });
-      else await settingsAction("removeSelected", { kind, ids: selected });
+        await browserData("removeHistory", { ids: selected });
+      else await browserData("removeSelected", { kind, ids: selected });
       await reload();
     });
   const check = (id: string) =>
@@ -95,7 +96,7 @@ export function BrowserManager({
     void s.run(async () => {
       const path = await frontend().settings.pickFile();
       if (!path) return;
-      const result = await settingsAction<{
+      const result = await browserData<{
         imported: number;
         skipped: number;
       }>(kind === "cookies" ? "importCookieJson" : "importPasswordCsv", {
@@ -150,7 +151,7 @@ export function BrowserManager({
                     ? undefined
                     : {
                         id: item.id,
-                        password: await settingsAction<string>(
+                        password: await browserData<string>(
                           "revealPassword",
                           { id: item.id },
                         ),
@@ -334,7 +335,7 @@ export function BrowserManager({
                     .map((x) => x.trim())
                     .filter(Boolean)
                     .join("/");
-                  await settingsAction("renameFolder", {
+                  await browserData("renameFolder", {
                     from: folder,
                     to: target,
                   });
@@ -385,7 +386,7 @@ export function BrowserManager({
                         t("清除全部浏览历史？", "Clear all browsing history?"),
                       )
                     ) {
-                      await settingsAction("removeHistory", { all: true });
+                      await browserData("removeHistory", { all: true });
                       await reload();
                     }
                   })
@@ -458,7 +459,7 @@ export function BrowserManager({
             onSubmit={(e) => {
               e.preventDefault();
               void s.run(async () => {
-                await settingsAction(
+                await browserData(
                   kind === "bookmarks" ? "saveBookmark" : "savePassword",
                   editing,
                 );

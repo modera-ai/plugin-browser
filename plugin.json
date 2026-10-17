@@ -1,6 +1,9 @@
 {
   "apiVersion": 1,
-  "workspaceTargets": ["local", "ssh"],
+  "workspaceTargets": [
+    "local",
+    "ssh"
+  ],
   "activationScope": "scoped",
   "id": "modera.browser",
   "name": "Browser",
@@ -1131,6 +1134,1181 @@
     "zh-CN": {
       "name": "浏览器",
       "description": "在隔离的侧边面板浏览网页，支持 AI 操作、读取及截图。"
+    }
+  },
+  "requiresHost": {
+    "plugin.commands.dispatch": 1,
+    "plugin.commands.callable": 1,
+    "context.commands": 1,
+    "frontend.commands.execute": 1,
+    "settings.commands": 1,
+    "plugin.providers": 1,
+    "plugin.declarations": 1,
+    "plugin.browser.navigation": 1
+  },
+  "declarations": {
+    "provides": {
+      "commands": [
+        {
+          "id": "modera.browser.tool.create",
+          "title": "Create browser tab",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              "url": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.tool.navigate",
+          "title": "Navigate browser",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              "url": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "url"
+            ],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.tool.click",
+          "title": "Click page",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "button": {
+                "enum": [
+                  "left",
+                  "right",
+                  "middle"
+                ],
+                "type": "string"
+              },
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              "ref": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              },
+              "selector": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              },
+              "text": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.tool.screenshot",
+          "title": "Capture browser",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.tool.devtools",
+          "title": "Inspect browser",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "maxLength": 1024,
+                "minLength": 1,
+                "type": "string"
+              },
+              "action": {
+                "enum": [
+                  "snapshot",
+                  "console",
+                  "ax",
+                  "cookies",
+                  "cookieDelete"
+                ],
+                "type": "string"
+              },
+              "domain": {
+                "maxLength": 253,
+                "minLength": 1,
+                "type": "string"
+              },
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              "limit": {
+                "maximum": 50,
+                "minimum": 1,
+                "type": "integer"
+              },
+              "offset": {
+                "maximum": 100000,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "showValues": {
+                "description": "Explicitly return plaintext cookie values in the tool result.",
+                "type": "boolean"
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.tool.wait",
+          "title": "Wait for page",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              "selector": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              },
+              "state": {
+                "enum": [
+                  "visible",
+                  "hidden"
+                ],
+                "type": "string"
+              },
+              "text": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              },
+              "timeMs": {
+                "maximum": 10000,
+                "minimum": 0,
+                "type": "integer"
+              },
+              "timeoutMs": {
+                "maximum": 25000,
+                "minimum": 100,
+                "type": "integer"
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.tool.press-key",
+          "title": "Press browser key",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              "key": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "key"
+            ],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.tool.hover",
+          "title": "Hover page",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              "ref": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              },
+              "selector": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              },
+              "text": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.tool.select-option",
+          "title": "Select option",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              "ref": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              },
+              "selector": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              },
+              "text": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              },
+              "values": {
+                "items": {
+                  "maxLength": 1000,
+                  "type": "string"
+                },
+                "maxItems": 30,
+                "minItems": 1,
+                "type": "array"
+              }
+            },
+            "required": [
+              "values"
+            ],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.tool.close",
+          "title": "Close browser tab",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.tool.focus",
+          "title": "Focus browser tab",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "instanceId"
+            ],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.tool.list",
+          "title": "List browser tabs",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.tool.type",
+          "title": "Type in browser",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "clear": {
+                "type": "boolean"
+              },
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              "ref": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              },
+              "selector": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              },
+              "submit": {
+                "type": "boolean"
+              },
+              "targetText": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              },
+              "text": {
+                "maxLength": 10000,
+                "type": "string"
+              }
+            },
+            "required": [
+              "text"
+            ],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.tool.evaluate",
+          "title": "Evaluate page script",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "expression": {
+                "maxLength": 50000,
+                "minLength": 1,
+                "type": "string"
+              },
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "expression"
+            ],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.tool.upload-file",
+          "title": "Upload workspace file",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch",
+            "workspace.read"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "files": {
+                "items": {
+                  "maxLength": 4000,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "maxItems": 10,
+                "minItems": 1,
+                "type": "array"
+              },
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              "selector": {
+                "maxLength": 4000,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "selector",
+              "files"
+            ],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.tool.back",
+          "title": "Browser back",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.tool.forward",
+          "title": "Browser forward",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.tool.get-tab-content",
+          "title": "Read browser tab",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "browser.control",
+            "network.fetch"
+          ],
+          "inputSchema": {
+            "additionalProperties": false,
+            "properties": {
+              "instanceId": {
+                "maxLength": 200,
+                "minLength": 1,
+                "type": "string"
+              },
+              "maxChars": {
+                "maximum": 18000,
+                "minimum": 100,
+                "type": "integer"
+              }
+            },
+            "required": [],
+            "type": "object"
+          }
+        },
+        {
+          "id": "modera.browser.data",
+          "title": "Manage browser data",
+          "visibility": "private",
+          "readOnly": false,
+          "requiredPermissions": [
+            "network.fetch",
+            "browser.control",
+            "workspace.read",
+            "storage.read",
+            "storage.write",
+            "process.spawn"
+          ],
+          "inputSchema": {
+            "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "operation": {
+                    "const": "renameFolder"
+                  },
+                  "value": {
+                    "type": "object",
+                    "properties": {
+                      "from": {
+                        "type": "string",
+                        "maxLength": 4000
+                      },
+                      "to": {
+                        "type": "string",
+                        "maxLength": 4000
+                      }
+                    },
+                    "required": [
+                      "from",
+                      "to"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "operation",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "operation": {
+                    "const": "removeSelected"
+                  },
+                  "value": {
+                    "type": "object",
+                    "properties": {
+                      "kind": {
+                        "enum": [
+                          "bookmarks",
+                          "passwords"
+                        ]
+                      },
+                      "ids": {
+                        "type": "array",
+                        "maxItems": 50,
+                        "items": {
+                          "type": "string",
+                          "maxLength": 4000
+                        }
+                      }
+                    },
+                    "required": [
+                      "kind",
+                      "ids"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "operation",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "operation": {
+                    "const": "saveBookmark"
+                  },
+                  "value": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "maxLength": 4000
+                      },
+                      "title": {
+                        "type": "string",
+                        "maxLength": 4000
+                      },
+                      "url": {
+                        "type": "string",
+                        "maxLength": 4000
+                      },
+                      "folder": {
+                        "type": "string",
+                        "maxLength": 4000
+                      }
+                    },
+                    "required": [
+                      "url"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "operation",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "operation": {
+                    "const": "savePassword"
+                  },
+                  "value": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "maxLength": 4000
+                      },
+                      "origin": {
+                        "type": "string",
+                        "maxLength": 4000
+                      },
+                      "username": {
+                        "type": "string",
+                        "maxLength": 4000
+                      },
+                      "password": {
+                        "type": "string",
+                        "maxLength": 4000
+                      }
+                    },
+                    "required": [
+                      "origin",
+                      "username",
+                      "password"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "operation",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "operation": {
+                    "const": "history"
+                  },
+                  "value": {
+                    "type": "object",
+                    "properties": {
+                      "query": {
+                        "type": "string",
+                        "maxLength": 4000
+                      },
+                      "page": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100000
+                      }
+                    },
+                    "required": [],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "operation",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "operation": {
+                    "const": "removeHistory"
+                  },
+                  "value": {
+                    "type": "object",
+                    "properties": {
+                      "ids": {
+                        "type": "array",
+                        "maxItems": 50,
+                        "items": {
+                          "type": "string",
+                          "maxLength": 4000
+                        }
+                      },
+                      "all": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "operation",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "operation": {
+                    "const": "importCookieJson"
+                  },
+                  "value": {
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "type": "string",
+                        "maxLength": 4000
+                      }
+                    },
+                    "required": [
+                      "path"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "operation",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "operation": {
+                    "const": "scanBrowsers"
+                  },
+                  "value": {
+                    "type": "object",
+                    "properties": {},
+                    "required": [],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "operation",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "operation": {
+                    "const": "dataSummary"
+                  },
+                  "value": {
+                    "type": "object",
+                    "properties": {
+                      "query": {
+                        "type": "string",
+                        "maxLength": 4000
+                      },
+                      "page": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 100000
+                      },
+                      "folder": {
+                        "type": "string",
+                        "maxLength": 4000
+                      }
+                    },
+                    "required": [],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "operation",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "operation": {
+                    "const": "importSelected"
+                  },
+                  "value": {
+                    "type": "object",
+                    "properties": {
+                      "source": {
+                        "type": "string",
+                        "maxLength": 4000
+                      },
+                      "passwords": {
+                        "type": "boolean"
+                      },
+                      "cookies": {
+                        "type": "boolean"
+                      },
+                      "bookmarks": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "source"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "operation",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "operation": {
+                    "const": "importPasswordCsv"
+                  },
+                  "value": {
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "type": "string",
+                        "maxLength": 4000
+                      }
+                    },
+                    "required": [
+                      "path"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "operation",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "operation": {
+                    "const": "revealPassword"
+                  },
+                  "value": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "maxLength": 4000
+                      }
+                    },
+                    "required": [
+                      "id"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "operation",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "operation": {
+                    "const": "removePassword"
+                  },
+                  "value": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "maxLength": 4000
+                      }
+                    },
+                    "required": [
+                      "id"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "operation",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "operation": {
+                    "const": "removeBookmark"
+                  },
+                  "value": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "maxLength": 4000
+                      }
+                    },
+                    "required": [
+                      "id"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "operation",
+                  "value"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        },
+        {
+          "id": "modera.browser.open",
+          "title": "Open web page",
+          "visibility": "public",
+          "readOnly": false,
+          "requiredPermissions": [
+            "network.fetch",
+            "browser.control"
+          ],
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "url"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "id": "modera.browser.new-tab",
+          "title": "New browser tab",
+          "visibility": "private",
+          "readOnly": false,
+          "requiredPermissions": [
+            "network.fetch",
+            "browser.control"
+          ],
+          "inputSchema": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "additionalProperties": false
+          }
+        },
+        {
+          "id": "modera.browser.visit",
+          "title": "Record visit",
+          "visibility": "private",
+          "readOnly": false,
+          "requiredPermissions": [
+            "storage.read",
+            "storage.write"
+          ],
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "url"
+            ],
+            "additionalProperties": false
+          }
+        },
+        {
+          "id": "modera.browser.bookmark",
+          "title": "Bookmark page",
+          "visibility": "private",
+          "readOnly": false,
+          "requiredPermissions": [
+            "storage.read",
+            "storage.write"
+          ],
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "url"
+            ],
+            "additionalProperties": false
+          }
+        }
+      ],
+      "ui": [
+        {
+          "id": "modera.browser.preview",
+          "slot": "ui.panel",
+          "description": "Isolated browser with native web preview"
+        }
+      ],
+      "providers": [
+        {
+          "id": "modera.browser.preview",
+          "capability": "browser.open",
+          "version": 1,
+          "title": "Browser",
+          "command": "modera.browser.open"
+        }
+      ]
+    },
+    "consumes": {
+      "host": [
+        {
+          "id": "pal.toast",
+          "reason": "Report browser operation results"
+        }
+      ]
     }
   }
 }
