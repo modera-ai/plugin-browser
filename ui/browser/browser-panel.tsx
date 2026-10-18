@@ -235,7 +235,13 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
       .catch(() => {});
   }, [state.url, state.title, state.loading, state.error, active, api]);
   const popup = useCallback(
-    async (items: MenuItem[], x: number, y: number) => {
+    async (
+      items: MenuItem[],
+      x: number,
+      y: number,
+      options: Pick<PanelMenuRequest, "variant" | "width"> = {},
+      onAction?: (action: string) => Promise<MenuItem[]>,
+    ) => {
       const current = ++menu.current;
       pendingMenu.current = true;
       const tokens: Record<string, string> = {};
@@ -252,7 +258,16 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
             tokens[key] = value;
         }
       try {
-        const selected = await api.menu.show({ x, y, items, tokens });
+        const request = { x, y, items, tokens, ...options };
+        const selected = await api.menu.show(
+          request,
+          onAction
+            ? async (action) => {
+                if (current !== menu.current || !latest.current.active) return;
+                return { ...request, items: await onAction(action) };
+              }
+            : undefined,
+        );
         return current === menu.current ? selected : null;
       } finally {
         if (current === menu.current) pendingMenu.current = false;
@@ -377,43 +392,90 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     const rect = anchor.getBoundingClientRect();
     const checks = (checked: boolean, label: string) =>
       checked ? "✓ " + label : label;
+    let zoom = state.zoomFactor ?? 1;
+    const hasPage = !!state.url;
+    const items = (): MenuItem[] => [
+      { id: "find", label: text.find, disabled: !hasPage },
+      { id: "group-zoom", label: "", separator: true },
+      {
+        id: "zoom",
+        label: text.zoom,
+        disabled: !hasPage,
+        controls: {
+          value: `${Math.round(zoom * 100)}%`,
+          buttons: [
+            { id: "zoom-out", label: text.zoomOut, disabled: zoom <= 0.25 },
+            { id: "zoom-in", label: text.zoomIn, disabled: zoom >= 3 },
+            {
+              id: "zoom-reset",
+              label: text.zoomReset,
+              disabled: Math.abs(zoom - 1) < 0.001,
+            },
+          ],
+        },
+      },
+      { id: "group-page", label: "", separator: true },
+      {
+        id: "device",
+        label: text.device,
+        children: [
+          { id: "desktop", label: checks(!mobile, text.desktop) },
+          { id: "mobile", label: checks(mobile, text.mobile) },
+        ],
+      },
+      { id: "screenshot", label: text.screenshot, disabled: !hasPage },
+      { id: "group-data", label: "", separator: true },
+      { id: "settings:import", label: text.import },
+      { id: "settings:bookmarks", label: text.bookmarks },
+      { id: "settings:passwords", label: text.passwords },
+      { id: "settings:history", label: text.history },
+      {
+        id: "clear",
+        label: text.clearData,
+        children: [
+          { id: "clear-cache", label: text.clearCache },
+          { id: "clear-cookies", label: text.clearCookies },
+        ],
+      },
+      {
+        id: "tools",
+        label: text.tools,
+        children: [
+          { id: "hard-reload", label: text.hardReload, disabled: !hasPage },
+          { id: "devtools", label: text.devtools, disabled: !hasPage },
+          { id: "settings:cookies", label: text.cookies },
+        ],
+      },
+      { id: "group-settings", label: "", separator: true },
+      {
+        id: "multiple",
+        label: checks(state.multipleTabs !== false, text.multiple),
+      },
+      { id: "settings:settings", label: text.settings },
+    ];
     const selected = await popup(
-      [
-        {
-          id: "multiple",
-          label: checks(state.multipleTabs !== false, text.multiple),
-        },
-        { id: "group-data", label: "", separator: true },
-        ...(
-          [
-            "settings",
-            "import",
-            "bookmarks",
-            "passwords",
-            "history",
-            "cookies",
-          ] as const
-        ).map((id) => ({ id: "settings:" + id, label: text[id] })),
-        { id: "group-display", label: "", separator: true },
-        { id: "zoom-out", label: text.zoomOut },
-        {
-          id: "zoom-reset",
-          label:
-            text.zoomReset + ` (${Math.round((state.zoomFactor ?? 1) * 100)}%)`,
-        },
-        { id: "zoom-in", label: text.zoomIn },
-        { id: "mobile", label: checks(mobile, text.mobile) },
-        { id: "group-page", label: "", separator: true },
-        { id: "find", label: text.find },
-        { id: "screenshot", label: text.screenshot },
-        { id: "hard-reload", label: text.hardReload },
-        { id: "devtools", label: text.devtools },
-        { id: "group-clear", label: "", separator: true },
-        { id: "clear-cache", label: text.clearCache },
-        { id: "clear-cookies", label: text.clearCookies },
-      ],
-      rect.left,
+      items(),
+      rect.right - 320,
       rect.bottom,
+      { variant: "dropdown", width: 320 },
+      async (action) => {
+        try {
+          const next = await execute({
+            type: "zoom",
+            factor:
+              action === "zoom-reset"
+                ? 1
+                : Math.min(
+                    3,
+                    Math.max(0.25, zoom + (action === "zoom-in" ? 0.1 : -0.1)),
+                  ),
+          });
+          zoom = next.zoomFactor ?? zoom;
+        } catch {
+          fail();
+        }
+        return items();
+      },
     );
     if (!selected) return;
     if (selected === "multiple") return toggleTabs();
@@ -421,23 +483,8 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
       return api.openSettings(
         selected === "settings:settings" ? "" : selected.slice(9),
       );
-    if (selected.startsWith("zoom-"))
-      return execute({
-        type: "zoom",
-        factor:
-          selected === "zoom-reset"
-            ? 1
-            : Math.min(
-                3,
-                Math.max(
-                  0.25,
-                  (state.zoomFactor ?? 1) +
-                    (selected === "zoom-in" ? 0.1 : -0.1),
-                ),
-              ),
-      });
-    if (selected === "mobile") {
-      setMobile((value) => !value);
+    if (selected === "mobile" || selected === "desktop") {
+      setMobile(selected === "mobile");
       return;
     }
     if (selected === "find") {

@@ -9,7 +9,10 @@ export interface BrowserApi extends Pick<
 > {
   openSettings(page?: string): Promise<void>;
   menu: {
-    show(request: PanelMenuRequest): Promise<string | null>;
+    show(
+      request: PanelMenuRequest,
+      onAction?: (action: string) => Promise<PanelMenuRequest | void>,
+    ): Promise<string | null>;
     dismiss(): void;
     prepare(): Promise<void>;
   };
