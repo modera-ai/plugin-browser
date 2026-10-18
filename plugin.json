@@ -2277,6 +2277,25 @@
               "title": {
                 "type": "string",
                 "maxLength": 4000
+              },
+              "operation": {
+                "type": "string",
+                "enum": [
+                  "save",
+                  "remove"
+                ]
+              },
+              "id": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "folder": {
+                "type": "string",
+                "maxLength": 300
+              },
+              "favicon": {
+                "type": "string",
+                "maxLength": 32768
               }
             },
             "required": [

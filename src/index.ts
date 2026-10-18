@@ -1,4 +1,5 @@
 import { bookmarkView } from "./data/bookmark-view";
+import { faviconUrl } from "./data/favicon";
 import { normalizeBrowserUrl } from "@pal/contracts";
 import { definePlugin, type PluginModule } from "@pal/plugin-sdk";
 import manifest from "../plugin.json";
@@ -62,12 +63,26 @@ export const activate: PluginModule["activate"] = async (host) => {
             return;
           }
           if (name === "bookmark") {
-            await data.store.addBookmarks([
-              {
+            const favicon = faviconUrl(input.favicon);
+            if (input.operation === "remove") {
+              if (!input.id) throw new Error("Bookmark required");
+              await data.store.remove("bookmarks", input.id);
+            } else if (input.operation === "save") {
+              await data.store.saveBookmark({
+                ...(input.id ? { id: input.id } : {}),
                 title: input.title || input.url,
                 url: normalizeBrowserUrl(input.url),
-              },
-            ]);
+                folder: input.folder || "",
+                ...(favicon ? { favicon } : {}),
+              });
+            } else
+              await data.store.addBookmarks([
+                {
+                  title: input.title || input.url,
+                  url: normalizeBrowserUrl(input.url),
+                  ...(favicon ? { favicon } : {}),
+                },
+              ]);
             host.invalidateUi?.();
             return bookmarkView(data.store);
           }

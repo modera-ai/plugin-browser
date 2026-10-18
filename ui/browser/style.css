@@ -95,6 +95,13 @@
   height: 16px;
   object-fit: contain;
 }
+.browser-bookmark-toggle[aria-pressed="true"] {
+  color: var(--mu-accent);
+}
+.browser-bookmark-fields {
+  display: grid;
+  gap: 16px;
+}
 .browser-tab > button:last-child {
   width: 24px;
   height: 24px;

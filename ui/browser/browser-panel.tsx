@@ -9,7 +9,6 @@ import React, {
 import {
   ArrowLeft,
   ArrowRight,
-  CornerDownLeft,
   ExternalLink,
   Globe,
   MoreHorizontal,
@@ -29,11 +28,13 @@ import {
 } from "./types";
 import { messages } from "./messages";
 import { useBrowser } from "./use-browser";
+import { BookmarkEditor } from "./bookmark-editor";
 type MenuItem = PanelMenuRequest["items"][number];
 const preference = "pal.browser.multiple-tabs";
 
 function TabIcon({ src }: { src?: string }) {
   const [failed, setFailed] = useState(false);
+  useEffect(() => setFailed(false), [src]);
   return src && !failed ? (
     <img
       className="browser-favicon"
@@ -45,6 +46,18 @@ function TabIcon({ src }: { src?: string }) {
   ) : (
     <Globe size={16} />
   );
+}
+function bookmarkIcon(
+  node: BookmarkNode,
+  tabs: { url: string; favicon?: string }[] = [],
+) {
+  const icon =
+    node.favicon ?? tabs.find((tab) => tab.url === node.url)?.favicon;
+  if (icon) return icon;
+  try {
+    if (node.url && /^https?:/.test(node.url))
+      return new URL("/favicon.ico", node.url).href;
+  } catch {}
 }
 
 export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
@@ -94,6 +107,20 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     };
   }, [api, active]);
   const [modal, setModal] = useState(false);
+  const [editingBookmark, setEditingBookmark] = useState<{
+    item: Bookmark;
+    added: boolean;
+  } | null>(null);
+  const closeBookmark = () => {
+    setEditingBookmark(null);
+    setModal(false);
+  };
+  useEffect(() => {
+    if (!active) {
+      setEditingBookmark(null);
+      setModal(false);
+    }
+  }, [active]);
   const menu = useRef(0),
     pendingMenu = useRef(false),
     seenContext = useRef("");
@@ -356,6 +383,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           id: "multiple",
           label: checks(state.multipleTabs !== false, text.multiple),
         },
+        { id: "group-data", label: "", separator: true },
         ...(
           [
             "settings",
@@ -366,6 +394,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
             "cookies",
           ] as const
         ).map((id) => ({ id: "settings:" + id, label: text[id] })),
+        { id: "group-display", label: "", separator: true },
         { id: "zoom-out", label: text.zoomOut },
         {
           id: "zoom-reset",
@@ -374,10 +403,12 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
         },
         { id: "zoom-in", label: text.zoomIn },
         { id: "mobile", label: checks(mobile, text.mobile) },
+        { id: "group-page", label: "", separator: true },
         { id: "find", label: text.find },
         { id: "screenshot", label: text.screenshot },
         { id: "hard-reload", label: text.hardReload },
         { id: "devtools", label: text.devtools },
+        { id: "group-clear", label: "", separator: true },
         { id: "clear-cache", label: text.clearCache },
         { id: "clear-cookies", label: text.clearCookies },
       ],
@@ -434,12 +465,77 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
       type: selected as "screenshot" | "hard-reload" | "devtools",
     });
   };
-  const saveBookmark = async () => {
+  const changeBookmark = async (
+    input: Bookmark & { operation?: "save" | "remove" },
+  ) => {
     const result = await api.commands.execute<{ bookmarks?: Bookmark[] }>(
       "modera.browser.bookmark",
-      { url: state.url, title: state.title || state.url },
+      input,
     );
     if (result.bookmarks) setBookmarks(result.bookmarks);
+    return result.bookmarks ?? [];
+  };
+  const savedBookmark = bookmarks.find((item) => item.url === state.url);
+  const editBookmark = async (item?: Bookmark) => {
+    const previous = item ?? savedBookmark;
+    let target = previous;
+    if (!target) {
+      const favicon = state.tabs?.find(
+        (tab) => tab.id === state.activeTab,
+      )?.favicon;
+      const list = await changeBookmark({
+        url: state.url,
+        title: state.title || state.url,
+        ...(favicon ? { favicon } : {}),
+      });
+      target = list.find((row) => row.url === state.url);
+    }
+    if (!target || !latest.current.active) return;
+    dismiss();
+    setModal(true);
+    await layout(false);
+    setEditingBookmark({ item: target, added: !previous });
+  };
+  const bookmarkContext = async (node: BookmarkNode, x: number, y: number) => {
+    const selected = await popup(
+      node.children
+        ? [
+            { id: "all", label: text.openAll },
+            { id: "separator", label: "", separator: true },
+            { id: "manage", label: text.manageBookmarks },
+          ]
+        : [
+            { id: "open", label: text.open },
+            { id: "new", label: text.openNew },
+            { id: "separator", label: "", separator: true },
+            { id: "edit", label: text.bookmarkEdit },
+            { id: "remove", label: text.remove },
+          ],
+      x,
+      y,
+    );
+    if (selected === "manage") return api.openSettings("bookmarks");
+    if (selected === "all") {
+      const visit = async (nodes: BookmarkNode[]) => {
+        for (const entry of nodes) {
+          if (!latest.current.active) return;
+          if (entry.children) await visit(entry.children);
+          else if (entry.url)
+            await api.commands.execute("modera.browser.open", {
+              url: entry.url,
+            });
+        }
+      };
+      return visit(node.children ?? []);
+    }
+    if (!node.url) return;
+    const item = { ...node, url: node.url };
+    if (selected === "open") command({ type: "navigate", url: node.url });
+    if (selected === "new")
+      await api.commands.execute("modera.browser.open", { url: node.url });
+    if (selected === "edit") await editBookmark(item);
+    if (selected === "remove")
+      await changeBookmark({ ...item, operation: "remove" });
   };
   const tree = useMemo(() => bookmarkTree(bookmarks), [bookmarks]);
   const button = (
@@ -562,7 +658,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
             title={text.go}
             aria-label={text.go}
           >
-            <CornerDownLeft size={18} />
+            <ArrowRight size={18} />
           </button>
         </div>
         <div className="browser-toolbar-group browser-actions">
@@ -578,14 +674,17 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
                 .execute("modera.browser.new-tab", {})
                 .catch(fail);
             })}
-          {button(
-            text.bookmark,
-            Star,
-            () => {
-              void saveBookmark().catch(fail);
-            },
-            !/^https?:/.test(state.url),
-          )}
+          <button
+            type="button"
+            title={savedBookmark ? text.bookmarkEdit : text.bookmark}
+            aria-label={savedBookmark ? text.bookmarkEdit : text.bookmark}
+            aria-pressed={!!savedBookmark}
+            className="browser-bookmark-toggle"
+            disabled={!/^https?:/.test(state.url)}
+            onClick={() => void editBookmark().catch(fail)}
+          >
+            <Star size={18} fill={savedBookmark ? "currentColor" : "none"} />
+          </button>
           <button
             type="button"
             title={text.menu}
@@ -605,6 +704,12 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
               type="button"
               key={index}
               title={node.title}
+              onContextMenu={(event) => {
+                event.preventDefault();
+                void bookmarkContext(node, event.clientX, event.clientY).catch(
+                  fail,
+                );
+              }}
               onClick={(event) => {
                 if (node.children)
                   void openFolder(node.children, event.currentTarget).catch(
@@ -613,7 +718,14 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
                 else if (node.url) command({ type: "navigate", url: node.url });
               }}
             >
-              {node.children ? <Folder size={14} /> : <Globe size={14} />}
+              {node.children ? (
+                <Folder size={14} />
+              ) : (
+                <TabIcon
+                  key={node.favicon ?? node.url}
+                  src={bookmarkIcon(node, state.tabs)}
+                />
+              )}
               <span>{node.title}</span>
             </button>
           ))}
@@ -659,6 +771,31 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           </div>
         )}
       </div>
+      {editingBookmark && (
+        <BookmarkEditor
+          item={editingBookmark.item}
+          added={editingBookmark.added}
+          folders={[
+            ...new Set(
+              bookmarks
+                .map((item) => item.folder)
+                .filter((folder): folder is string => !!folder),
+            ),
+          ]}
+          text={text}
+          close={closeBookmark}
+          fail={fail}
+          save={async (item) => {
+            await changeBookmark({ ...item, operation: "save" });
+          }}
+          remove={async () => {
+            await changeBookmark({
+              ...editingBookmark.item,
+              operation: "remove",
+            });
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { randomUUID } from "node:crypto";
 import type { PluginContext } from "@pal/plugin-sdk";
 import type { Bookmark } from "./profiles";
+import { faviconUrl } from "./favicon";
 export interface Password {
   id: string;
   origin: string;
@@ -118,9 +119,11 @@ export class BrowserStore {
         throw new Error("Invalid bookmark URL");
       const list = await this.bookmarks();
       const old = list.find((x) => x.id === item.id);
+      const favicon = faviconUrl(item.favicon);
       const value = {
         title: item.title.slice(0, 500),
         url: url.href,
+        ...(favicon ? { favicon } : {}),
         folder: (item.folder ?? "")
           .split("/")
           .map((x) => x.trim())

@@ -15,6 +15,7 @@ export interface ImportSource {
   note: string;
 }
 export interface Bookmark {
+  favicon?: string;
   folder?: string;
   title: string;
   url: string;

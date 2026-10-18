@@ -1,6 +1,8 @@
 import React from "react";
 import BrowserPanel from "./browser/browser-panel";
 import type { BrowserProps } from "./browser/types";
+import { UiProvider } from "@pal/ui/provider";
+import { resolveLocale } from "@pal/contracts";
 // @ts-expect-error The host renderer embeds its styles in the panel ShadowRoot.
 import css from "./browser/style.css";
 // @ts-expect-error Public UI styles are bundled as text in trusted host modules.
@@ -15,7 +17,33 @@ export default function BrowserHostPanel(props: BrowserProps) {
   return (
     <>
       <style>{uiCss + css + variables}</style>
-      <BrowserPanel {...props} />
+      <UiProvider
+        theme={theme?.mode}
+        locale={
+          resolveLocale(props.snapshot.locale, ["en", "zh"]) === "zh"
+            ? "zh-CN"
+            : "en"
+        }
+        style={
+          {
+            height: "100%",
+            ...(colors
+              ? {
+                  "--mu-page": colors.page,
+                  "--mu-card": colors.card,
+                  "--mu-control": colors.control,
+                  "--mu-ink": colors.ink,
+                  "--mu-muted": colors.muted,
+                  "--mu-line": colors.line,
+                  "--mu-soft": colors.soft,
+                  "--mu-accent": theme?.accent,
+                }
+              : {}),
+          } as React.CSSProperties
+        }
+      >
+        <BrowserPanel {...props} />
+      </UiProvider>
     </>
   );
 }

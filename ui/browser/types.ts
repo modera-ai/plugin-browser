@@ -24,8 +24,9 @@ export interface Bookmark {
   title: string;
   url: string;
   folder?: string;
+  favicon?: string;
 }
-export interface BookmarkNode {
+export interface BookmarkNode extends Omit<Bookmark, "url"> {
   title: string;
   url?: string;
   children?: BookmarkNode[];
@@ -42,7 +43,7 @@ export function bookmarkTree(items: Bookmark[]): BookmarkNode[] {
       }
       nodes = folder.children!;
     }
-    nodes.push({ title: item.title, url: item.url });
+    nodes.push({ ...item });
   }
   return root;
 }
