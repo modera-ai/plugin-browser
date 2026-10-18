@@ -730,7 +730,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
             disabled={!/^https?:/.test(state.url)}
             onClick={() => void editBookmark().catch(fail)}
           >
-            <Star size={18} fill={savedBookmark ? "currentColor" : "none"} />
+            <Star size={18} weight={savedBookmark ? "fill" : "regular"} />
           </button>
           <button
             type="button"
