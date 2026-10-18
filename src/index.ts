@@ -108,6 +108,7 @@ export const activate: PluginModule["activate"] = async (host) => {
         "storage.write",
       ],
       commands: [
+        "modera.browser.open",
         "modera.browser.new-tab",
         "modera.browser.visit",
         "modera.browser.bookmark",

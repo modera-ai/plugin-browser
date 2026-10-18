@@ -1146,7 +1146,8 @@
     "plugin.providers": 1,
     "plugin.declarations": 1,
     "plugin.browser.navigation": 1,
-    "frontend.webPreview.tabs": 1
+    "frontend.webPreview.tabs": 1,
+    "frontend.webPreview.contextMenu": 1
   },
   "declarations": {
     "provides": {

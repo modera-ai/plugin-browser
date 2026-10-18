@@ -187,11 +187,11 @@ p {
   font-size: 19px;
   background: light-dark(#f0f3f7,color-mix(in srgb,#f0f3f7 12%,var(--surface)));
 }
-#browser-menu[hidden] { display: none; }
+#browser-menu[hidden], #page-context-menu[hidden] { display: none; }
 #browser-menu > strong { display: block; padding: 7px 9px; font-size: 12px; color: var(--mu-muted); }
 #browser-menu p { padding: 8px; font-size: 12px; }
 .browser-menu-popover { max-width: calc(100vw - 16px); max-height: calc(100vh - 70px); overflow: auto; }
-#browser-menu .mu-menu-item { height: auto; }
+#browser-menu .mu-menu-item, #page-context-menu .mu-menu-item { height: auto; }
 .menu-zoom { display: flex; align-items: center; gap: 4px; padding: 4px 9px; border-block: 1px solid var(--mu-line); margin-block: 5px; }
 .menu-zoom > span { flex: 1; font-size: 13px; }
 .menu-zoom .mu-menu-item { width: 28px; padding: 5px; justify-content: center; }

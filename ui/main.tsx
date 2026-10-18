@@ -1,4 +1,5 @@
 // @ts-nocheck -- legacy DOM controller, bundled alongside the typed tooltip adapter.
+import { createPageContextMenu, createPageOpenRequests } from './components/page-context-menu';
 import { createBrowserTabs } from './components/browser-tabs';
 import { setTooltip } from './components/tooltips';
 import { createBrowserMenu, createMenuItem, setIcon } from './components/browser-menu';
@@ -17,6 +18,10 @@ try { multiple = localStorage.getItem("pal.browser.multiple-tabs") !== "false"; 
 let tabs;
 let zoom = 1;
 let confirmingTabs = false;
+let contextOpen = false;
+let pageContextMenu;
+let processPageOpens;
+let locale = "en";
 
 let zh = false;
 let menuOpen = false,
@@ -47,6 +52,8 @@ const errors = {
 };
 function paint(next) {
   state = next;
+  pageContextMenu?.update(next, locale);
+  void processPageOpens?.(next);
   tabs?.paint(next);
   $("empty").style.display = next.url ? "none" : "flex";
   if (
@@ -100,7 +107,7 @@ async function layout() {
     y: Math.ceil(box.y),
     width: Math.floor(box.width),
     height: Math.floor(box.height),
-    visible: !!state.url && state.error !== "page-crashed" && !menuOpen && !confirmingTabs,
+    visible: !!state.url && state.error !== "page-crashed" && !menuOpen && !confirmingTabs && !contextOpen,
   };
   const key = JSON.stringify(bounds);
   if (key === lastBounds) return;
@@ -133,7 +140,15 @@ $("new").addEventListener("click", () => {
     });
 });
 const snapshot = await api.snapshot();
+locale = snapshot.locale;
 zh = snapshot.locale.startsWith("zh");
+pageContextMenu = createPageContextMenu(api, $("page-context-menu"), locale, async (open, image) => {
+  contextOpen = open;
+  if (image) $("viewport").style.backgroundImage = `url("${image}")`;
+  if (!contextOpen && !menuOpen) $("viewport").style.backgroundImage = "";
+  await layout();
+}, paint);
+processPageOpens = createPageOpenRequests(api, () => locale);
 tabs = createBrowserTabs($("tabs"), snapshot.locale, command);
 await command({ type: "tabs-mode", multiple });
 document.documentElement.lang = zh ? "zh-CN" : "en";
@@ -226,6 +241,7 @@ api.onChanged(async () => {
     while (bookmarksDirty) {
       bookmarksDirty = false;
       const next = await api.snapshot();
+      locale = next.locale;
       zh = next.locale.startsWith("zh");
       tabs.language(next.locale);
       tabs.paint(state);
@@ -243,7 +259,7 @@ async function closeMenu() {
   renderMenu(null);
   $("menu-button").setAttribute("aria-expanded", "false");
   await layout();
-  $("viewport").style.backgroundImage = "";
+  if (!contextOpen) $("viewport").style.backgroundImage = "";
 }
 async function presentMenu(anchor) {
   if (!menuOpen) {
