@@ -99,7 +99,7 @@ export const activate: PluginModule["activate"] = async (host) => {
         icon: "globe",
         locales: { "zh-CN": { title: "浏览器", description: "浏览网页" } },
       },
-      frontend: "browser",
+      hostRenderer: "browser",
       nativeCapabilities: ["web-preview"],
       requiredPermissions: [
         "network.fetch",

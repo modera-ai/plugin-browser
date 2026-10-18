@@ -55,10 +55,6 @@
     "settings": {
       "entry": "settings.html",
       "root": "dist/ui"
-    },
-    "browser": {
-      "entry": "index.html",
-      "root": "dist/ui"
     }
   },
   "tools": [
@@ -1147,7 +1143,9 @@
     "plugin.declarations": 1,
     "plugin.browser.navigation": 1,
     "frontend.webPreview.tabs": 2,
-    "frontend.webPreview.contextMenu": 2
+    "frontend.webPreview.contextMenu": 2,
+    "plugin.hostPanel": 1,
+    "plugin.hostPanel.webPreview": 1
   },
   "declarations": {
     "provides": {
@@ -2316,6 +2314,12 @@
           "reason": "Confirm closing other browser tabs when disabling multiple tabs"
         }
       ]
+    }
+  },
+  "hostRenderers": {
+    "browser": {
+      "root": "dist/ui",
+      "entry": "host.js"
     }
   }
 }
