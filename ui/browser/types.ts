@@ -1,5 +1,6 @@
 import type {
   PanelMenuRequest,
+  PanelWorkspaceApi,
   PluginFrontendApi,
   PluginSurfaceSnapshot,
 } from "@pal/contracts";
@@ -7,6 +8,7 @@ export interface BrowserApi extends Pick<
   PluginFrontendApi,
   "commands" | "webPreview" | "toast" | "dialog" | "snapshot" | "onChanged"
 > {
+  workspace?: PanelWorkspaceApi;
   openSettings(page?: string): Promise<void>;
   menu: {
     show(

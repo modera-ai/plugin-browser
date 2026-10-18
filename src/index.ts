@@ -115,6 +115,7 @@ export const activate: PluginModule["activate"] = async (host) => {
         locales: { "zh-CN": { title: "浏览器", description: "浏览网页" } },
       },
       hostRenderer: "browser",
+      restoreVersion: 1,
       nativeCapabilities: ["web-preview"],
       requiredPermissions: [
         "network.fetch",

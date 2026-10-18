@@ -1145,6 +1145,7 @@
     "frontend.webPreview.tabs": 2,
     "frontend.webPreview.contextMenu": 2,
     "plugin.hostPanel": 1,
+    "plugin.hostPanel.workspace": 1,
     "plugin.hostPanel.webPreview": 1,
     "plugin.hostPanel.menu.controls": 1
   },
