@@ -32,6 +32,21 @@ import { useBrowser } from "./use-browser";
 type MenuItem = PanelMenuRequest["items"][number];
 const preference = "pal.browser.multiple-tabs";
 
+function TabIcon({ src }: { src?: string }) {
+  const [failed, setFailed] = useState(false);
+  return src && !failed ? (
+    <img
+      className="browser-favicon"
+      src={src}
+      alt=""
+      referrerPolicy="no-referrer"
+      onError={() => setFailed(true)}
+    />
+  ) : (
+    <Globe size={16} />
+  );
+}
+
 export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
   const text = messages(snapshot.locale);
   const fail = useCallback(() => {
@@ -472,7 +487,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
                 title={tab.url || text.blank}
                 onClick={() => command({ type: "tab-select", id: tab.id })}
               >
-                <Globe size={16} />
+                <TabIcon key={tab.favicon} src={tab.favicon} />
                 <span>
                   {tab.title ||
                     (tab.url ? new URL(tab.url).hostname : text.blank)}

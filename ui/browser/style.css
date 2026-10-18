@@ -89,6 +89,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.browser-favicon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
 .browser-tab > button:last-child {
   width: 24px;
   height: 24px;
