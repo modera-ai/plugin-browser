@@ -1,4 +1,5 @@
 // @ts-nocheck -- legacy DOM controller, bundled alongside the typed tooltip adapter.
+import { createBrowserTabs } from './components/browser-tabs';
 import { setTooltip } from './components/tooltips';
 import { createBrowserMenu, createMenuItem, setIcon } from './components/browser-menu';
 async function boot() {
@@ -11,6 +12,12 @@ const renderMenu = createBrowserMenu($("browser-menu"), () => void closeMenu());
 // Mount before attaching legacy event handlers; subsequent updates retain the button.
 for (const [id, text] of Object.entries({back:'Back',forward:'Forward',external:'Open externally',new:'New tab',go:'Go',reload:'Reload',bookmark:'Bookmark page','menu-button':'Browser menu'})) setTooltip($(id),text);
 let state = { url: "", loading: false, error: "" };
+let multiple = true;
+try { multiple = localStorage.getItem("pal.browser.multiple-tabs") !== "false"; } catch {}
+let tabs;
+let zoom = 1;
+let confirmingTabs = false;
+
 let zh = false;
 let menuOpen = false,
   lastVisit = "",
@@ -40,6 +47,7 @@ const errors = {
 };
 function paint(next) {
   state = next;
+  tabs?.paint(next);
   $("empty").style.display = next.url ? "none" : "flex";
   if (
     !next.loading &&
@@ -53,8 +61,8 @@ function paint(next) {
       .catch(() => {});
   }
 
-  if (document.activeElement !== $("url") && next.url)
-    $("url").value = next.url;
+  if (document.activeElement !== $("url")) $("url").value = next.url;
+  zoom = next.zoomFactor ?? 1;
   $("back").disabled = !next.canGoBack;
   $("forward").disabled = !next.canGoForward;
   $("external").disabled = !/^https?:/.test(next.url);
@@ -92,7 +100,7 @@ async function layout() {
     y: Math.ceil(box.y),
     width: Math.floor(box.width),
     height: Math.floor(box.height),
-    visible: !!state.url && state.error !== "page-crashed" && !menuOpen,
+    visible: !!state.url && state.error !== "page-crashed" && !menuOpen && !confirmingTabs,
   };
   const key = JSON.stringify(bounds);
   if (key === lastBounds) return;
@@ -117,6 +125,7 @@ for (const type of ["back", "forward", "external"])
 $("reload").addEventListener("click", () =>
   void command({ type: state.loading ? "stop" : "reload" }));
 $("new").addEventListener("click", () => {
+  if (multiple) { void command({ type: "tab-create" }); return; }
   void api
     .commands.execute("modera.browser.new-tab", {})
     .catch(() => {
@@ -125,6 +134,8 @@ $("new").addEventListener("click", () => {
 });
 const snapshot = await api.snapshot();
 zh = snapshot.locale.startsWith("zh");
+tabs = createBrowserTabs($("tabs"), snapshot.locale, command);
+await command({ type: "tabs-mode", multiple });
 document.documentElement.lang = zh ? "zh-CN" : "en";
 for (const [id, cn, en] of [
   ["back", "后退", "Back"],
@@ -145,7 +156,7 @@ $("hint").textContent = label(
 api.webPreview.onChanged(paint);
 new ResizeObserver(() => void layout()).observe($("viewport"));
 await command(
-  snapshot.view.data?.url && !snapshot.view.data?.managed
+  snapshot.view.data?.url && !snapshot.view.data?.managed && !state.url
     ? { type: "navigate", url: snapshot.view.data.url }
     : { type: "state" },
 );
@@ -215,6 +226,9 @@ api.onChanged(async () => {
     while (bookmarksDirty) {
       bookmarksDirty = false;
       const next = await api.snapshot();
+      zh = next.locale.startsWith("zh");
+      tabs.language(next.locale);
+      tabs.paint(state);
       showBookmarks(next.view.data?.bookmarks);
     }
   } catch {
@@ -272,10 +286,36 @@ async function openItems(items, anchor, title, back) {
   }
   await presentMenu(anchor);
 }
-let zoom = 1;
+
 async function browserMenu() {
   const menu = $("browser-menu");
   menu.replaceChildren();
+  menu.append(menuItem((multiple ? "✓ " : "") + tabs.messages().multiple, async () => {
+    if (multiple && (state.tabs?.length ?? 0) > 1) {
+      confirmingTabs = true;
+      await layout();
+      let accepted = false;
+      try {
+        accepted = await api.dialog.confirm({
+          title: tabs.messages().discard, content: tabs.messages().detail,
+        });
+      } finally {
+        confirmingTabs = false;
+        await layout();
+      }
+      if (!accepted) { await closeMenu(); return; }
+    }
+    await closeMenu();
+    const next = !multiple;
+    try {
+      const result = await api.webPreview.command({ type: "tabs-mode", multiple: next });
+      multiple = next;
+      try { localStorage.setItem("pal.browser.multiple-tabs", String(next)); } catch {}
+      paint(result);
+    } catch {
+      await api.toast.show({ text: tabs.messages().failure, level: "error" });
+    }
+  }));
   const open = (page) => async () => {
     await closeMenu();
     await api.openSettings(page);

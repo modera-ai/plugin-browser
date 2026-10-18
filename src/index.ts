@@ -31,6 +31,22 @@ export const activate: PluginModule["activate"] = async (host) => {
           if (name === "open" || name === "new-tab") {
             if (!host.panels) throw new Error("Panel navigation unavailable");
             const url = name === "open" ? normalizeBrowserUrl(input.url) : "";
+            if (context.sessionId && host.webPages) {
+              await host.webPages.execute(
+                {
+                  type: "create",
+                  panel: "modera.browser.preview",
+                  resource: JSON.stringify({
+                    key: crypto.randomUUID(),
+                    url,
+                    automated: true,
+                  }),
+                  ...(url ? { url } : {}),
+                },
+                context,
+              );
+              return { opened: true };
+            }
             await host.panels.open(
               "modera.browser.preview",
               JSON.stringify({ key: crypto.randomUUID(), url }),

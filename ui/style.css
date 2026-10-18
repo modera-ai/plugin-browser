@@ -213,3 +213,11 @@ p {
 #findbar[hidden] {
   display: none;
 }
+
+#tabs[hidden] { display: none; }
+#tabs { display: flex; flex: 0 0 42px; gap: 4px; padding: 4px 8px; overflow-x: auto; align-items: center; border-bottom: 1px solid var(--mu-border, light-dark(#e8ecf2,var(--border))); }
+.browser-tab { display: flex; align-items: center; flex: 0 1 200px; min-width: 100px; border-radius: 9px; padding: 0 3px; }
+.browser-tab.selected { background: light-dark(#f1f2f4, var(--surface-hover)); }
+.browser-tab > button[role="tab"] { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; width: auto; padding: 0 8px; font-size: 13px; text-align: left; }
+.browser-tab-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.browser-tab > button.browser-tab-close { display: grid; place-items: center; width: 24px; height: 24px; }

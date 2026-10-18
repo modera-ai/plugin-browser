@@ -1145,7 +1145,8 @@
     "settings.commands": 1,
     "plugin.providers": 1,
     "plugin.declarations": 1,
-    "plugin.browser.navigation": 1
+    "plugin.browser.navigation": 1,
+    "frontend.webPreview.tabs": 1
   },
   "declarations": {
     "provides": {
@@ -2308,6 +2309,10 @@
         {
           "id": "pal.toast",
           "reason": "Report browser operation results"
+        },
+        {
+          "id": "pal.dialog",
+          "reason": "Confirm closing other browser tabs when disabling multiple tabs"
         }
       ]
     }
