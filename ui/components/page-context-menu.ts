@@ -81,7 +81,6 @@ export function createPageContextMenu(
     current = undefined;
     ++generation;
     render(null);
-    await overlay(false);
     if (dismiss && previous) {
       try {
         await api.webPreview.command({
@@ -92,6 +91,7 @@ export function createPageContextMenu(
         /* closed or revoked */
       }
     }
+    await overlay(false);
   }
   async function execute(
     menu: WebPreviewContextMenu,
@@ -139,14 +139,13 @@ export function createPageContextMenu(
         ),
       );
     }
-    let image: string | undefined;
+    await overlay(true);
     try {
-      image = await api.webPreview.capture();
+      await api.webPreview.command({ type: "context-present", token: menu.token });
     } catch {
-      /* A menu can still close when capture is unavailable. */
+      if (generation === version) await close();
+      return;
     }
-    if (generation !== version || current !== menu) return;
-    await overlay(true, image);
     if (generation !== version || current !== menu) return;
     render({ x: menu.x, y: menu.y });
     element

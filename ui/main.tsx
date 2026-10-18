@@ -17,7 +17,6 @@ let multiple = true;
 try { multiple = localStorage.getItem("pal.browser.multiple-tabs") !== "false"; } catch {}
 let tabs;
 let zoom = 1;
-let confirmingTabs = false;
 let contextOpen = false;
 let pageContextMenu;
 let processPageOpens;
@@ -107,7 +106,7 @@ async function layout() {
     y: Math.ceil(box.y),
     width: Math.floor(box.width),
     height: Math.floor(box.height),
-    visible: !!state.url && state.error !== "page-crashed" && !menuOpen && !confirmingTabs && !contextOpen,
+    visible: !!state.url && state.error !== "page-crashed" && !menuOpen,
   };
   const key = JSON.stringify(bounds);
   if (key === lastBounds) return;
@@ -142,14 +141,15 @@ $("new").addEventListener("click", () => {
 const snapshot = await api.snapshot();
 locale = snapshot.locale;
 zh = snapshot.locale.startsWith("zh");
-pageContextMenu = createPageContextMenu(api, $("page-context-menu"), locale, async (open, image) => {
+pageContextMenu = createPageContextMenu(api, $("page-context-menu"), locale, async (open) => {
   contextOpen = open;
-  if (image) $("viewport").style.backgroundImage = `url("${image}")`;
-  if (!contextOpen && !menuOpen) $("viewport").style.backgroundImage = "";
+  document.documentElement.classList.toggle("page-menu-open", open);
   await layout();
 }, paint);
 processPageOpens = createPageOpenRequests(api, () => locale);
 tabs = createBrowserTabs($("tabs"), snapshot.locale, command);
+await command({ type: "state" });
+if (state.multipleTabs === false) multiple = false;
 await command({ type: "tabs-mode", multiple });
 document.documentElement.lang = zh ? "zh-CN" : "en";
 for (const [id, cn, en] of [
@@ -307,24 +307,11 @@ async function browserMenu() {
   const menu = $("browser-menu");
   menu.replaceChildren();
   menu.append(menuItem((multiple ? "✓ " : "") + tabs.messages().multiple, async () => {
-    if (multiple && (state.tabs?.length ?? 0) > 1) {
-      confirmingTabs = true;
-      await layout();
-      let accepted = false;
-      try {
-        accepted = await api.dialog.confirm({
-          title: tabs.messages().discard, content: tabs.messages().detail,
-        });
-      } finally {
-        confirmingTabs = false;
-        await layout();
-      }
-      if (!accepted) { await closeMenu(); return; }
-    }
     await closeMenu();
     const next = !multiple;
     try {
-      const result = await api.webPreview.command({ type: "tabs-mode", multiple: next });
+      const resources = !next ? (state.tabs ?? []).filter((tab) => tab.id !== state.activeTab).map(() => JSON.stringify({ key: crypto.randomUUID(), automated: true })) : undefined;
+      const result = await api.webPreview.command({ type: "tabs-mode", multiple: next, ...(resources?.length ? { resources } : {}) });
       multiple = next;
       try { localStorage.setItem("pal.browser.multiple-tabs", String(next)); } catch {}
       paint(result);

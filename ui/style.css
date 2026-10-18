@@ -217,7 +217,12 @@ p {
 #tabs[hidden] { display: none; }
 #tabs { display: flex; flex: 0 0 42px; gap: 4px; padding: 4px 8px; overflow-x: auto; align-items: center; border-bottom: 1px solid var(--mu-border, light-dark(#e8ecf2,var(--border))); }
 .browser-tab { display: flex; align-items: center; flex: 0 1 200px; min-width: 100px; border-radius: 9px; padding: 0 3px; }
-.browser-tab.selected { background: light-dark(#f1f2f4, var(--surface-hover)); }
+.browser-tab:hover, .browser-tab.selected { background: light-dark(#f1f2f4, var(--surface-hover)); }
+.browser-tab > button[role="tab"]:hover { background: transparent; }
 .browser-tab > button[role="tab"] { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; width: auto; padding: 0 8px; font-size: 13px; text-align: left; }
 .browser-tab-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .browser-tab > button.browser-tab-close { display: grid; place-items: center; width: 24px; height: 24px; }
+.browser-tab > button[role="tab"] { flex-shrink: 1; }
+.browser-tab-add { display: grid; place-items: center; flex: none; }
+.page-menu-open, .page-menu-open body, .page-menu-open #viewport { background: transparent !important; }
+.page-menu-open #tabs, .page-menu-open #bookmarks, .page-menu-open #status { background: var(--mu-page, light-dark(#fff, var(--surface))); }

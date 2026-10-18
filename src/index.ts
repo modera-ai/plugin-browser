@@ -31,7 +31,7 @@ export const activate: PluginModule["activate"] = async (host) => {
           if (name === "open" || name === "new-tab") {
             if (!host.panels) throw new Error("Panel navigation unavailable");
             const url = name === "open" ? normalizeBrowserUrl(input.url) : "";
-            if (context.sessionId && host.webPages) {
+            if (host.webPages) {
               await host.webPages.execute(
                 {
                   type: "create",

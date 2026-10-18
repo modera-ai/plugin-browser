@@ -8,20 +8,18 @@ const messages = {
   en: {
     blank: "New tab",
     close: "Close",
+    add: "New tab",
     tabs: "Open pages",
     multiple: "Multiple tabs",
     failure: "Could not change tab mode",
-    discard: "Close other tabs?",
-    detail: "Other pages will be closed. Unsaved page input may be lost.",
   },
   zh: {
     blank: "新标签页",
     close: "关闭",
+    add: "新标签页",
     tabs: "打开的网页",
     multiple: "多标签页",
     failure: "无法切换标签模式",
-    discard: "关闭其他标签页？",
-    detail: "其他网页将关闭，网页中未提交的输入可能丢失。",
   },
 };
 export function createBrowserTabs(
@@ -77,6 +75,13 @@ export function createBrowserTabs(
         container.append(select, close);
         root.append(container);
       }
+      const add = document.createElement("button");
+      add.className = "browser-tab-add";
+      add.setAttribute("aria-label", text.add);
+      add.title = text.add;
+      setIcon(add, "Plus", 18);
+      add.onclick = () => void execute({ type: "tab-create" });
+      root.append(add);
     },
   };
 }
