@@ -43,8 +43,7 @@
   opacity: 0.35;
   cursor: default;
 }
-.browser-panel button:focus-visible,
-.browser-panel input:focus-visible {
+.browser-panel button:focus-visible {
   outline: 2px solid var(--mu-accent);
   outline-offset: -2px;
 }
@@ -98,25 +97,98 @@
   display: flex;
   flex: none;
   align-items: center;
-  gap: 3px;
+  gap: 8px;
   min-width: 0;
   margin: 0;
-  padding: 8px;
+  min-height: 52px;
+  padding: 7px 10px;
   border-bottom: 1px solid var(--mu-line);
-  background: var(--mu-card);
+  background: var(--mu-page);
+}
+.browser-toolbar-group {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 2px;
+  height: 36px;
+  padding: 3px 4px;
+  border: 1px solid var(--mu-line);
+  border-radius: 999px;
+  background: var(--mu-page);
+  box-shadow: 0 2px 8px #00000005;
+}
+.browser-toolbar button {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  transition: background-color 120ms ease;
+}
+.browser-toolbar button svg {
+  width: 17px;
+  height: 17px;
+}
+.browser-toolbar-divider {
+  flex: none;
+  width: 1px;
+  height: 16px;
+  margin: 0 3px;
+  background: var(--mu-line);
+}
+.browser-reload {
+  position: relative;
+}
+.browser-reload.loading .browser-reload-icon {
+  animation: browser-reload-spin 1s linear infinite;
+}
+.browser-stop-icon {
+  position: absolute;
+  opacity: 0;
+}
+.browser-reload.loading:is(:hover, :focus-visible) .browser-reload-icon {
+  opacity: 0;
+}
+.browser-reload.loading:is(:hover, :focus-visible) .browser-stop-icon {
+  opacity: 1;
+}
+@keyframes browser-reload-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .browser-reload.loading .browser-reload-icon {
+    animation: none;
+  }
+  .browser-toolbar button {
+    transition: none;
+  }
 }
 .browser-address {
   display: flex;
   align-items: center;
   flex: 1;
-  gap: 8px;
+  gap: 6px;
   min-width: 45px;
-  height: 32px;
-  padding: 0 9px;
+  height: 36px;
+  padding: 0 5px 0 10px;
   border: 1px solid var(--mu-line);
-  border-radius: 8px;
+  border-radius: 999px;
   background: var(--mu-page);
   color: var(--mu-muted);
+}
+.browser-address input {
+  text-align: center;
+}
+.browser-address:focus-within input {
+  text-align: left;
+}
+.browser-address .browser-go {
+  opacity: 0;
+  pointer-events: none;
+}
+.browser-address:focus-within .browser-go {
+  opacity: 1;
+  pointer-events: auto;
 }
 .browser-panel input {
   min-width: 0;
@@ -127,6 +199,27 @@
   color: var(--mu-ink);
   font: inherit;
   outline: 0;
+}
+.browser-address input:focus,
+.browser-address input:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+@media (max-width: 480px) {
+  .browser-toolbar {
+    gap: 4px;
+    padding-inline: 6px;
+  }
+  .browser-toolbar-group {
+    gap: 0;
+    padding-inline: 2px;
+  }
+  .browser-toolbar button {
+    width: 26px;
+  }
+  .browser-address > svg {
+    display: none;
+  }
 }
 .browser-bookmarks {
   display: flex;

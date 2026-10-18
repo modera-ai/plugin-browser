@@ -501,24 +501,32 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           addressFocused.current = false;
         }}
       >
-        {button(
-          text.back,
-          ArrowLeft,
-          () => command({ type: "back" }),
-          !state.canGoBack,
-        )}
-        {button(
-          text.forward,
-          ArrowRight,
-          () => command({ type: "forward" }),
-          !state.canGoForward,
-        )}
-        {button(
-          state.loading ? text.stop : text.reload,
-          state.loading ? X : RefreshCw,
-          () => command({ type: state.loading ? "stop" : "reload" }),
-        )}
-        <label className="browser-address">
+        <div className="browser-toolbar-group browser-navigation">
+          {button(
+            text.back,
+            ArrowLeft,
+            () => command({ type: "back" }),
+            !state.canGoBack,
+          )}
+          {button(
+            text.forward,
+            ArrowRight,
+            () => command({ type: "forward" }),
+            !state.canGoForward,
+          )}
+          <span className="browser-toolbar-divider" aria-hidden="true" />
+          <button
+            type="button"
+            className={"browser-reload" + (state.loading ? " loading" : "")}
+            title={state.loading ? text.stop : text.reload}
+            aria-label={state.loading ? text.stop : text.reload}
+            onClick={() => command({ type: state.loading ? "stop" : "reload" })}
+          >
+            <RefreshCw className="browser-reload-icon" size={18} />
+            {state.loading && <X className="browser-stop-icon" size={18} />}
+          </button>
+        </div>
+        <div className="browser-address">
           <Globe size={16} />
           <input
             value={address}
@@ -533,39 +541,47 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
             }}
             onChange={(event) => setAddress(event.target.value)}
           />
-        </label>
-        <button type="submit" title={text.go} aria-label={text.go}>
-          <CornerDownLeft size={18} />
-        </button>
-        {button(
-          text.external,
-          ExternalLink,
-          () => command({ type: "external" }),
-          !/^https?:/.test(state.url),
-        )}
-        {button(text.blank, Plus, () => {
-          if (state.multipleTabs !== false) command({ type: "tab-create" });
-          else
-            void api.commands.execute("modera.browser.new-tab", {}).catch(fail);
-        })}
-        {button(
-          text.bookmark,
-          Star,
-          () => {
-            void saveBookmark().catch(fail);
-          },
-          !/^https?:/.test(state.url),
-        )}
-        <button
-          type="button"
-          title={text.menu}
-          aria-label={text.menu}
-          onClick={(event) => {
-            void showMenu(event.currentTarget).catch(fail);
-          }}
-        >
-          <MoreHorizontal size={18} />
-        </button>
+          <button
+            type="submit"
+            className="browser-go"
+            title={text.go}
+            aria-label={text.go}
+          >
+            <CornerDownLeft size={18} />
+          </button>
+        </div>
+        <div className="browser-toolbar-group browser-actions">
+          {button(
+            text.external,
+            ExternalLink,
+            () => command({ type: "external" }),
+            !/^https?:/.test(state.url),
+          )}
+          {state.multipleTabs === false &&
+            button(text.blank, Plus, () => {
+              void api.commands
+                .execute("modera.browser.new-tab", {})
+                .catch(fail);
+            })}
+          {button(
+            text.bookmark,
+            Star,
+            () => {
+              void saveBookmark().catch(fail);
+            },
+            !/^https?:/.test(state.url),
+          )}
+          <button
+            type="button"
+            title={text.menu}
+            aria-label={text.menu}
+            onClick={(event) => {
+              void showMenu(event.currentTarget).catch(fail);
+            }}
+          >
+            <MoreHorizontal size={18} />
+          </button>
+        </div>
       </form>
       {!!tree.length && (
         <nav className="browser-bookmarks" aria-label={text.bookmarks}>
