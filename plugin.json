@@ -1137,6 +1137,7 @@
     }
   },
   "requiresHost": {
+    "plugin.providers.approval": 1,
     "plugin.commands.dispatch": 1,
     "plugin.commands.callable": 1,
     "context.commands": 1,
