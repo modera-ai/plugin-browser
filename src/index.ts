@@ -120,8 +120,10 @@ export const activate: PluginModule["activate"] = async (host) => {
       requiredPermissions: [
         "network.fetch",
         "browser.control",
+        "workspace.read",
         "storage.read",
         "storage.write",
+        "process.spawn",
       ],
       actionLimits: { maxValueChars: 4000, timeoutMs: 120000 },
       commands: [
