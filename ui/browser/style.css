@@ -235,25 +235,36 @@
   }
 }
 .browser-bookmarks {
+  position: relative;
   display: flex;
   flex: none;
   gap: 4px;
   min-width: 0;
   height: 34px;
   align-items: center;
-  overflow-x: auto;
-  overflow-y: hidden;
+  overflow: hidden;
   padding: 0 8px;
   border-bottom: 1px solid var(--mu-line);
 }
 .browser-bookmarks button {
   gap: 6px;
-  width: auto;
+  width: max-content;
   max-width: 180px;
   min-width: 0;
   height: 26px;
   padding: 4px 8px;
   font-size: 12px;
+}
+.browser-bookmarks [data-overflow],
+.browser-bookmarks-more[data-empty] {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+}
+.browser-bookmarks .browser-bookmarks-more {
+  width: 26px;
+  padding: 0;
+  margin-left: auto;
 }
 .browser-bookmarks span {
   overflow: hidden;

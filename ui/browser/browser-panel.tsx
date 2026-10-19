@@ -19,6 +19,7 @@ import {
   X,
   Folder,
 } from "@pal/ui/icons";
+import { CaretDoubleRightIcon as ChevronsRight } from "@phosphor-icons/react/dist/csr/CaretDoubleRight";
 import type { PanelMenuRequest, WebPreviewCommand } from "@pal/contracts";
 import {
   bookmarkTree,
@@ -29,6 +30,7 @@ import {
 import { messages } from "./messages";
 import { useBrowser } from "./use-browser";
 import { BookmarkEditor } from "./bookmark-editor";
+import { useBookmarkOverflow } from "./use-bookmark-overflow";
 type MenuItem = PanelMenuRequest["items"][number];
 const preference = "pal.browser.multiple-tabs";
 
@@ -353,6 +355,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
         ],
         rect.left,
         rect.bottom,
+        { variant: "dropdown", width: 360 },
       );
       if (selected === null) return;
       if (selected === "back") {
@@ -585,6 +588,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
       await changeBookmark({ ...item, operation: "remove" });
   };
   const tree = useMemo(() => bookmarkTree(bookmarks), [bookmarks]);
+  const bookmarkOverflow = useBookmarkOverflow(tree);
   const button = (
     label: string,
     Icon: typeof Globe,
@@ -745,12 +749,20 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
         </div>
       </form>
       {!!tree.length && (
-        <nav className="browser-bookmarks" aria-label={text.bookmarks}>
+        <nav
+          ref={bookmarkOverflow.bar}
+          className="browser-bookmarks"
+          aria-label={text.bookmarks}
+        >
           {tree.map((node, index) => (
             <button
               type="button"
               key={index}
               title={node.title}
+              data-bookmark-item
+              data-overflow={index >= bookmarkOverflow.visible || undefined}
+              inert={index >= bookmarkOverflow.visible}
+              aria-hidden={index >= bookmarkOverflow.visible || undefined}
               onContextMenu={(event) => {
                 event.preventDefault();
                 void bookmarkContext(node, event.clientX, event.clientY).catch(
@@ -776,6 +788,24 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
               <span>{node.title}</span>
             </button>
           ))}
+          <button
+            type="button"
+            className="browser-bookmarks-more"
+            title={text.moreBookmarks}
+            aria-label={text.moreBookmarks}
+            aria-haspopup="menu"
+            data-empty={bookmarkOverflow.visible >= tree.length || undefined}
+            inert={bookmarkOverflow.visible >= tree.length}
+            aria-hidden={bookmarkOverflow.visible >= tree.length || undefined}
+            onClick={(event) => {
+              void openFolder(
+                tree.slice(bookmarkOverflow.visible),
+                event.currentTarget,
+              ).catch(fail);
+            }}
+          >
+            <ChevronsRight size={16} />
+          </button>
         </nav>
       )}
       {!!status && (

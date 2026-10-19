@@ -15,6 +15,7 @@ const en = {
   bookmarkName: "Name",
   bookmarkFolder: "Folder",
   bookmarkBar: "Bookmarks bar",
+  moreBookmarks: "More bookmarks",
   done: "Done",
   remove: "Remove",
   open: "Open",
@@ -68,6 +69,7 @@ const en = {
   inspect: "Inspect",
 };
 const zh: typeof en = {
+  moreBookmarks: "更多书签",
   blank: "新标签页",
   close: "关闭",
   back: "后退",
