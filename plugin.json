@@ -1148,6 +1148,8 @@
     "plugin.hostPanel": 1,
     "plugin.hostPanel.workspace": 1,
     "plugin.hostPanel.webPreview": 2,
+    "frontend.webPreview.annotations": 1,
+    "frontend.webPreview.extensions": 1,
     "plugin.hostPanel.overlays": 1,
     "plugin.hostPanel.menu.controls": 1,
     "plugin.hostPanel.menu.content": 1

@@ -20,7 +20,7 @@ import {
   X,
   Folder,
 } from "@pal/ui/icons";
-import { Tooltip } from "@pal/ui";
+import { Button, Tooltip } from "@pal/ui";
 import { CameraIcon as Camera } from "@phosphor-icons/react/dist/csr/Camera";
 import { CaretDoubleRightIcon as ChevronsRight } from "@phosphor-icons/react/dist/csr/CaretDoubleRight";
 import type { PanelMenuRequest, WebPreviewCommand } from "@pal/contracts";
@@ -30,6 +30,9 @@ import {
   type BookmarkNode,
   type BrowserProps,
 } from "./types";
+import { AnnotationEditor } from "./annotation-editor";
+import { ExtensionsDialog } from "./extensions-dialog";
+import { MousePointer2, Puzzle } from "lucide-react";
 import { messages } from "./messages";
 import { useBrowser } from "./use-browser";
 import { BrowserErrorPage } from "./error-page";
@@ -90,6 +93,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
   );
   const root = useRef<HTMLDivElement>(null),
     viewport = useRef<HTMLDivElement>(null);
+  const [extensionsOpen, setExtensionsOpen] = useState(false);
   const [address, setAddress] = useState("");
   const addressFocused = useRef(false);
   const [deviceOpen, setDeviceOpen] = useState(() => {
@@ -210,6 +214,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
       bookmarkGeneration.current++;
       setEditingBookmark(null);
       setDataDialog(null);
+      setExtensionsOpen(false);
     }
   }, [active]);
   useEffect(
@@ -311,6 +316,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     deviceOpen,
     device,
     bookmarks.length,
+    state.annotations?.selecting,
     layout,
   ]);
   useEffect(() => {
@@ -530,6 +536,16 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
       },
       { id: "group-tabs", label: "", separator: true },
       { id: "find", label: text.find, disabled: !hasPage },
+      {
+        id: "annotation",
+        label: text.annotate,
+        disabled: !hasPage,
+        children: [
+          { id: "annotation-element", label: text.annotateElement },
+          { id: "annotation-region", label: text.annotateRegion },
+        ],
+      },
+      { id: "extensions", label: text.extensions },
       { id: "group-zoom", label: "", separator: true },
       {
         id: "zoom",
@@ -616,6 +632,18 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
       },
     );
     if (!selected) return;
+    if (selected === "annotation-element" || selected === "annotation-region") {
+      await execute({
+        type: "annotation-start",
+        mode: selected === "annotation-region" ? "region" : "element",
+      });
+      return;
+    }
+    if (selected === "extensions") {
+      setExtensionsOpen(true);
+      await execute({ type: "extension-list" });
+      return;
+    }
     if (selected === "multiple") return toggleTabs();
     if (selected.startsWith("settings:"))
       return api.openSettings(
@@ -859,6 +887,39 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           </Tooltip>
         </div>
         <div className="browser-toolbar-group browser-actions">
+          <Tooltip content={text.annotate} side="top">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label={text.annotate}
+              aria-pressed={!!state.annotations?.selecting}
+              disabled={!/^https?:/.test(state.url)}
+              onClick={() =>
+                command(
+                  state.annotations?.selecting
+                    ? { type: "annotation-cancel" }
+                    : { type: "annotation-start", mode: "element" },
+                )
+              }
+            >
+              <MousePointer2 size={16} />
+            </Button>
+          </Tooltip>
+          <Tooltip content={text.extensions} side="top">
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              aria-label={text.extensions}
+              onClick={() => {
+                setExtensionsOpen(true);
+                command({ type: "extension-list" });
+              }}
+            >
+              <Puzzle size={16} />
+            </Button>
+          </Tooltip>
           {button(
             text.screenshot,
             Camera,
@@ -971,6 +1032,21 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           </Tooltip>
         </nav>
       )}
+      {state.annotations?.selecting && (
+        <div className="browser-annotation-status" role="status">
+          <span>
+            {state.annotations.selecting === "region"
+              ? text.annotationRegionHint
+              : text.annotationElementHint}
+          </span>
+          <Button
+            size="small"
+            onClick={() => command({ type: "annotation-cancel" })}
+          >
+            {text.cancel}
+          </Button>
+        </div>
+      )}
       {deviceOpen && (
         <DeviceToolbar
           text={text}
@@ -1011,6 +1087,36 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           </div>
         )}
       </div>
+      {active && state.annotations?.selection && (
+        <AnnotationEditor
+          key={state.annotations.selection.token}
+          selection={state.annotations.selection}
+          text={text}
+          fail={report}
+          cancel={() => command({ type: "annotation-cancel" })}
+          submit={async (comment) => {
+            await execute({
+              type: "annotation-submit",
+              token: state.annotations!.selection!.token,
+              comment,
+            });
+            await api.toast.show({
+              level: "success",
+              text: text.annotationAdded,
+            });
+          }}
+        />
+      )}
+      {active && extensionsOpen && (
+        <ExtensionsDialog
+          text={text}
+          extensions={state.extensions ?? []}
+          available={state.extensionsAvailable !== false}
+          execute={execute}
+          fail={report}
+          close={() => setExtensionsOpen(false)}
+        />
+      )}
       {dataDialog === "import" && (
         <BrowserImportDialog
           locale={snapshot.locale}
