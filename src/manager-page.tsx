@@ -510,9 +510,9 @@ export function BrowserManager({
           </form>
         </div>
       )}
-      {(s.message || s.error) && (
+      {s.message && !s.failed && (
         <p role="status" className="df-notice">
-          {s.error || s.message}
+          {s.message}
         </p>
       )}
     </SettingsPage>

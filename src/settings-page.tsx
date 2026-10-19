@@ -5,14 +5,15 @@ import { Form, FormItem, SettingsPage, SettingsPanel, SettingsBreadcrumbs } from
 import { DownloadIcon as Download } from "@phosphor-icons/react/dist/csr/Download";
 import { GlobeIcon as Globe } from "@phosphor-icons/react/dist/csr/Globe";
 import { ClockCounterClockwiseIcon as History } from "@phosphor-icons/react/dist/csr/ClockCounterClockwise";
-import { frontend, useSettings } from "@pal/plugin-sdk/react";
+import { frontend } from "@pal/plugin-sdk/react";
+import { useBrowserSettings } from "./use-browser-settings";
 import { BrowserManager, type ManagerKind } from "./manager-page";
 import { type Summary } from "./settings-management";
 
 type Source = { id: string; name: string; profile: string; account: string; passwords: number; cookies: number; bookmarks: number; note: string };
 
 export function BrowserSettings() {
-  const s = useSettings({ autoSave: true });
+  const s = useBrowserSettings();
   const t = (zh: string, en: string) => s.zh ? zh : en;
   const [summary, setSummary] = useState<Summary>({ passwordCount: 0, cookieCount: 0, bookmarkCount: 0, passwords: [], bookmarks: [] });
   const initialRoute = window.location.hash.slice(1);
@@ -58,7 +59,7 @@ export function BrowserSettings() {
       { label: t("浏览器", "Browser"), onSelect: () => { setRoute(""); void s.run(refresh); } },
       ...(managerRoute ? [{ label: ({ bookmarks: t("书签管理器", "Bookmarks"), passwords: t("密码管理器", "Passwords"), history: t("浏览历史", "History"), cookies: t("Cookie 导入", "Import cookies") } as Record<string,string>)[route]! }] : []),
     ]} onBack={navigation.index > 0 ? () => setNavigation(current => ({ ...current, index: current.index - 1 })) : undefined} onForward={navigation.index + 1 < navigation.entries.length ? () => setNavigation(current => ({ ...current, index: current.index + 1 })) : undefined} />}
-    {!s.config ? <SettingsPage title={t("浏览器设置", "Browser settings")}><DialogNotice tone={s.error ? "error" : "default"}>{s.error || t("正在加载…", "Loading…")}</DialogNotice></SettingsPage>
+    {!s.config ? <SettingsPage title={t("浏览器设置", "Browser settings")}>{s.error ? <Button variant="outline" onClick={() => window.location.reload()}>{t("重试", "Retry")}</Button> : <DialogNotice>{t("正在加载…", "Loading…")}</DialogNotice>}</SettingsPage>
     : managerRoute ? <BrowserManager kind={route as ManagerKind} s={s} />
     : <SettingsPage title={t("浏览器设置", "Browser settings")} description={t("设置起始页，查看本机浏览数据。", "Set a start page and review local browser data.")} actions={<span className="settings-save-feedback" role="status" aria-live="polite">{s.failed || s.error ? "" : s.message}</span>}>
       <SettingsPanel variant="preferences" title={t("偏好设置", "Preferences")}>
@@ -67,7 +68,6 @@ export function BrowserSettings() {
           <FormItem variant="inline" label={t("从其他浏览器导入", "Import from another browser")} description={t("选择浏览器配置和需要迁移的数据。", "Choose a browser profile and the data to bring over.")}><Button variant="outline" disabled={s.busy} onClick={() => void s.run(scan)}><Download size={14} />{t("打开导入", "Open import")}</Button></FormItem>
         </Form>
       </SettingsPanel>
-      {(s.failed || s.error) && <DialogNotice tone={s.failed || s.error ? "error" : "default"}>{s.error || s.message}</DialogNotice>}
       <SettingsPanel variant="preferences" title={t("浏览数据", "Browsing data")}>
         <Form>
           <FormItem variant="inline" label={t("书签", "Bookmarks")} description={t(`已保存 ${summary.bookmarkCount} 条书签，支持文件夹、搜索和编辑。`, `${summary.bookmarkCount} saved bookmarks. Organize folders, search and edit.`)}><Button variant="outline" onClick={() => setRoute("bookmarks")}>{t("管理", "Manage")}</Button></FormItem>
@@ -87,7 +87,6 @@ export function BrowserSettings() {
           <DialogNotice>{t("书签及旧版加密数据无需管理员权限。新版 Chrome / Edge 的应用绑定加密密码和 Cookie 暂不支持，导入时会跳过；密码可从浏览器导出 CSV 后导入。", "Bookmarks and older encrypted data need no administrator access. App-bound encrypted passwords and cookies are currently skipped; passwords can be imported from a browser CSV export.")}</DialogNotice>
           {source.note && <DialogNotice tone="warning">{source.note}</DialogNotice>}
         </div>}
-        {s.error && <DialogNotice tone="error">{s.error}</DialogNotice>}
       </Dialog>
     </SettingsPage>}
   </UiProvider>;
