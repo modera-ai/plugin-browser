@@ -402,7 +402,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           width: 360,
           maxHeight: Math.max(
             80,
-            Math.min(1200, window.innerHeight - rect.bottom - 24),
+            Math.min(1200, Math.floor(window.innerHeight - rect.bottom - 24)),
           ),
         },
       );
