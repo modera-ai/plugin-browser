@@ -388,6 +388,7 @@
   white-space: nowrap;
 }
 .browser-folder-tree {
+  overscroll-behavior: contain;
   margin-top: 16px;
   height: 280px;
   overflow: auto;

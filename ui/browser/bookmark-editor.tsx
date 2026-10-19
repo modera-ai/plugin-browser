@@ -240,7 +240,13 @@ export function BookmarkEditor({
       </div>
       {advanced && (
         <>
-          <div className="browser-folder-tree" aria-label={text.bookmarkFolder}>
+          <div
+            className="browser-folder-tree"
+            aria-label={text.bookmarkFolder}
+            // Keep native scrolling inside the shadow-root dialog. The modal's
+            // document-level scroll lock sees a retargeted event outside its content.
+            onWheel={(event) => event.stopPropagation()}
+          >
             <button
               type="button"
               className="browser-folder-root"
