@@ -1,3 +1,4 @@
+import React from "react";
 import { Button } from "@pal/ui";
 import { Globe } from "@pal/ui/icons";
 import type { messages } from "./messages";
