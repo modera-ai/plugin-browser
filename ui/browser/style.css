@@ -113,8 +113,10 @@
   gap: 8px;
   min-width: 0;
   margin: 0;
-  min-height: 52px;
-  padding: 7px 10px;
+  height: 48px;
+  min-height: 48px;
+  flex-basis: 48px;
+  padding: 6px 8px;
   border-bottom: 1px solid var(--mu-line);
   background: var(--mu-page);
 }
@@ -123,12 +125,12 @@
   flex: none;
   align-items: center;
   gap: 2px;
-  height: 36px;
-  padding: 3px 4px;
+  height: 32px;
+  padding: 1px 5px;
   border: 1px solid var(--mu-line);
   border-radius: 999px;
   background: var(--mu-page);
-  box-shadow: 0 2px 8px #00000005;
+  box-shadow: none;
 }
 .browser-toolbar button {
   width: 28px;
@@ -137,8 +139,9 @@
   transition: background-color 120ms ease;
 }
 .browser-toolbar button svg {
-  width: 17px;
-  height: 17px;
+  display: block;
+  width: 16px;
+  height: 16px;
 }
 .browser-toolbar-divider {
   flex: none;
@@ -182,7 +185,7 @@
   flex: 1;
   gap: 6px;
   min-width: 45px;
-  height: 36px;
+  height: 32px;
   padding: 0 5px 0 10px;
   border: 1px solid var(--mu-line);
   border-radius: 999px;
@@ -226,9 +229,6 @@
   .browser-toolbar-group {
     gap: 0;
     padding-inline: 2px;
-  }
-  .browser-toolbar button {
-    width: 26px;
   }
   .browser-address > svg {
     display: none;
