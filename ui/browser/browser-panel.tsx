@@ -32,6 +32,7 @@ import {
 } from "./types";
 import { messages } from "./messages";
 import { useBrowser } from "./use-browser";
+import { BrowserErrorPage } from "./error-page";
 import { BookmarkEditor } from "./bookmark-editor";
 import { useBookmarkOverflow } from "./use-bookmark-overflow";
 import {
@@ -246,7 +247,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           visibleOverride ??
           (value.active &&
             !!value.state.url &&
-            value.state.error !== "page-crashed" &&
+            (!value.state.error || value.state.error === "popup-blocked") &&
             box.width > 0 &&
             box.height > 0),
       };
@@ -303,6 +304,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     void layout().catch(() => {});
   }, [
     state.url,
+    state.error,
     state.activeTab,
     state.multipleTabs,
     active,
@@ -758,15 +760,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
       </button>
     </Tooltip>
   );
-  const status = state.error
-    ? state.error === "timeout"
-      ? text.timeout
-      : state.error === "page-crashed"
-        ? text.crashed
-        : state.error.includes("blocked")
-          ? text.blocked
-          : text.loadFailed
-    : "";
+  const pageError = state.error && state.error !== "popup-blocked";
   return (
     <div className="browser-panel" ref={root}>
       {state.multipleTabs !== false && (
@@ -977,11 +971,6 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           </Tooltip>
         </nav>
       )}
-      {!!status && (
-        <div className="browser-status" role="status">
-          {status}
-        </div>
-      )}
       {deviceOpen && (
         <DeviceToolbar
           text={text}
@@ -1006,7 +995,15 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
         }
         ref={viewport}
       >
-        {!state.url && (
+        {pageError && (
+          <BrowserErrorPage
+            error={state.error}
+            url={state.url}
+            text={text}
+            retry={() => command({ type: "reload" })}
+          />
+        )}
+        {!pageError && !state.url && (
           <div className="browser-empty">
             <Globe size={44} />
             <h1>{text.empty}</h1>

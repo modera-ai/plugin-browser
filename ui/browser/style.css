@@ -535,3 +535,26 @@
   opacity: 0.5;
   cursor: default;
 }
+
+.browser-error-page {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  background: var(--mu-page);
+  color: var(--mu-ink);
+}
+.browser-error-content {
+  box-sizing: border-box;
+  width: min(100%, 560px);
+  margin: clamp(32px, 15vh, 160px) auto 32px;
+  padding: 0 28px;
+  font-size: 14px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.browser-error-icon { color: var(--mu-accent); margin-bottom: 20px; }
+.browser-error-content h1 { margin: 0 0 12px; font-size: 22px; font-weight: 500; line-height: 1.4; }
+.browser-error-content p { margin: 0 0 24px; color: var(--mu-muted); }
+.browser-error-content ul { margin: 0 0 24px; padding-left: 22px; color: var(--mu-muted); }
+.browser-error-content .browser-error-try { margin-bottom: 0; }
+.browser-error-code { display: block; margin-bottom: 32px; color: var(--mu-muted); font-size: 12px; }
