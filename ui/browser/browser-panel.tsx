@@ -1,3 +1,4 @@
+import { readUiThemeTokens } from "@pal/ui/provider";
 import React, {
   useCallback,
   useEffect,
@@ -337,19 +338,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     ) => {
       const current = ++menu.current;
       pendingMenu.current = true;
-      const tokens: Record<string, string> = {};
-      const styles = root.current && getComputedStyle(root.current);
-      if (styles)
-        for (
-          let i = 0;
-          i < styles.length && Object.keys(tokens).length < 256;
-          i++
-        ) {
-          const key = styles[i]!,
-            value = styles.getPropertyValue(key);
-          if (key.startsWith("--mu-") && value.length <= 500)
-            tokens[key] = value;
-        }
+      const tokens = root.current ? readUiThemeTokens(root.current) : {};
       try {
         const request = { x, y, items, tokens, ...options };
         const selected = await api.menu.show(
