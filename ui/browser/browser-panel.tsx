@@ -193,8 +193,6 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
       stop();
     };
   }, [api, active]);
-  const [modal, setModal] = useState(false);
-  const [pageBackdrop, setPageBackdrop] = useState<string>();
   const bookmarkOpening = useRef(false);
   const bookmarkGeneration = useRef(0);
   const [editingBookmark, setEditingBookmark] = useState<{
@@ -204,15 +202,12 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
   const closeBookmark = () => {
     bookmarkGeneration.current++;
     setEditingBookmark(null);
-    setModal(false);
   };
   useEffect(() => {
     if (!active) {
       bookmarkGeneration.current++;
-      setPageBackdrop(undefined);
       setEditingBookmark(null);
       setDataDialog(null);
-      setModal(false);
     }
   }, [active]);
   useEffect(
@@ -224,8 +219,8 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
   const menu = useRef(0),
     pendingMenu = useRef(false),
     seenContext = useRef("");
-  const latest = useRef({ state, active, modal });
-  latest.current = { state, active, modal };
+  const latest = useRef({ state, active });
+  latest.current = { state, active };
   const lastLayout = useRef("");
   const layout = useCallback(
     async (visibleOverride?: boolean) => {
@@ -249,7 +244,6 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
         visible:
           visibleOverride ??
           (value.active &&
-            !value.modal &&
             !!value.state.url &&
             value.state.error !== "page-crashed" &&
             box.width > 0 &&
@@ -305,21 +299,12 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     };
   }, [layout]);
   useLayoutEffect(() => {
-    let cancelled = false;
-    void layout()
-      .then(() => {
-        if (!cancelled && !modal) setPageBackdrop(undefined);
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
+    void layout().catch(() => {});
   }, [
     state.url,
     state.activeTab,
     state.multipleTabs,
     active,
-    modal,
     deviceOpen,
     device,
     bookmarks.length,
@@ -664,17 +649,12 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     if (selected === "import" || selected === "clear") {
       const generation = ++bookmarkGeneration.current;
       const page = latest.current.state.activeTab;
-      const backdrop = state.url
-        ? await api.webPreview.capture().catch(() => undefined)
-        : undefined;
       if (
         !latest.current.active ||
         generation !== bookmarkGeneration.current ||
         latest.current.state.activeTab !== page
       )
         return;
-      setPageBackdrop(backdrop);
-      setModal(true);
       setDataDialog(selected);
       return;
     }
@@ -718,19 +698,12 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
       )
         return;
       dismiss();
-      // Native views render above DOM dialogs. Keep a transient backdrop while the
-      // same live page is occluded; never reload or replace the browser tab.
-      const backdrop = state.url
-        ? await api.webPreview.capture().catch(() => undefined)
-        : undefined;
       if (
         !latest.current.active ||
         generation !== bookmarkGeneration.current ||
         latest.current.state.activeTab !== state.activeTab
       )
         return;
-      setPageBackdrop(backdrop);
-      setModal(true);
       setEditingBookmark({ item: target, added: !previous });
     } finally {
       bookmarkOpening.current = false;
@@ -1044,14 +1017,6 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
         }
         ref={viewport}
       >
-        {pageBackdrop && (
-          <img
-            className="browser-page-backdrop"
-            src={pageBackdrop}
-            alt=""
-            aria-hidden="true"
-          />
-        )}
         {!state.url && (
           <div className="browser-empty">
             <Globe size={44} />
@@ -1066,7 +1031,6 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           invoke={invokeData}
           close={() => {
             setDataDialog(null);
-            setModal(false);
           }}
           fail={report}
           notify={() => {
@@ -1079,7 +1043,6 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           text={text}
           close={() => {
             setDataDialog(null);
-            setModal(false);
           }}
           fail={report}
           clear={async (value) => {

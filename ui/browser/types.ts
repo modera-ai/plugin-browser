@@ -20,6 +20,7 @@ export interface BrowserApi extends Pick<
   };
 }
 export interface BrowserProps {
+  overlayRoot?: HTMLElement;
   api: BrowserApi;
   snapshot: PluginSurfaceSnapshot;
   active: boolean;

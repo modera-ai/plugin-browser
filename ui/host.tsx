@@ -21,6 +21,7 @@ export default function BrowserHostPanel(props: BrowserProps) {
       <style>{uiCss + menuCss + css + variables}</style>
       <UiProvider
         density="compact"
+        portalContainer={props.overlayRoot}
         theme={theme?.mode}
         locale={
           resolveLocale(props.snapshot.locale, ["en", "zh"]) === "zh"

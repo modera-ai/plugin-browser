@@ -309,14 +309,7 @@
   font-size: 13px;
 }
 
-.browser-page-backdrop {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  pointer-events: none;
-}
+
 .browser-bookmark-editor {
   width: min(460px, calc(100vw - 28px));
 }
@@ -541,21 +534,4 @@
 .browser-clear-rows .disabled {
   opacity: 0.5;
   cursor: default;
-}
-
-/* The native page starts below the 40px chrome. Public toasts must stay in that
-   uncovered strip rather than behind the WebContentsView at the bottom. */
-:host [data-pal-interactions] .pal-notices:not(.messages) {
-  top: 2px;
-  bottom: auto;
-  left: 8px;
-  right: auto;
-  max-width: min(420px, calc(100% - 16px));
-  max-height: 36px;
-}
-:host [data-pal-interactions] .pal-toast-wrap {
-  padding: 3px;
-}
-:host [data-pal-interactions] section[data-kind="toast"] {
-  padding: 6px 10px;
 }
