@@ -109,20 +109,32 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     };
   }, [api, active]);
   const [modal, setModal] = useState(false);
+  const [pageBackdrop, setPageBackdrop] = useState<string>();
+  const bookmarkOpening = useRef(false);
+  const bookmarkGeneration = useRef(0);
   const [editingBookmark, setEditingBookmark] = useState<{
     item: Bookmark;
     added: boolean;
   } | null>(null);
   const closeBookmark = () => {
+    bookmarkGeneration.current++;
     setEditingBookmark(null);
     setModal(false);
   };
   useEffect(() => {
     if (!active) {
+      bookmarkGeneration.current++;
+      setPageBackdrop(undefined);
       setEditingBookmark(null);
       setModal(false);
     }
   }, [active]);
+  useEffect(
+    () => () => {
+      bookmarkGeneration.current++;
+    },
+    [],
+  );
   const menu = useRef(0),
     pendingMenu = useRef(false),
     seenContext = useRef("");
@@ -207,7 +219,15 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     };
   }, [layout]);
   useLayoutEffect(() => {
-    void layout().catch(() => {});
+    let cancelled = false;
+    void layout()
+      .then(() => {
+        if (!cancelled && !modal) setPageBackdrop(undefined);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
   }, [
     state.url,
     state.activeTab,
@@ -241,7 +261,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
       items: MenuItem[],
       x: number,
       y: number,
-      options: Pick<PanelMenuRequest, "variant" | "width"> = {},
+      options: Pick<PanelMenuRequest, "variant" | "width" | "maxHeight"> = {},
       onAction?: (action: string) => Promise<MenuItem[]>,
     ) => {
       const current = ++menu.current;
@@ -362,7 +382,10 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
                   label.length > 200
                     ? label.slice(0, 199).replace(/[\uD800-\uDBFF]$/, "") + "…"
                     : label,
-                icon: node.children ? ("box" as const) : ("globe" as const),
+                icon: node.children ? ("folder" as const) : ("globe" as const),
+                image: node.children
+                  ? undefined
+                  : bookmarkIcon(node, state.tabs),
               };
             }),
           ...(page > 0
@@ -374,7 +397,14 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
         ],
         rect.left,
         rect.bottom,
-        { variant: "dropdown", width: 360 },
+        {
+          variant: "dropdown",
+          width: 360,
+          maxHeight: Math.max(
+            80,
+            Math.min(1200, window.innerHeight - rect.bottom - 24),
+          ),
+        },
       );
       if (selected === null) return;
       if (selected === "previous" || selected === "next") {
@@ -551,24 +581,47 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
   };
   const savedBookmark = bookmarks.find((item) => item.url === state.url);
   const editBookmark = async (item?: Bookmark) => {
-    const previous = item ?? savedBookmark;
-    let target = previous;
-    if (!target) {
-      const favicon = state.tabs?.find(
-        (tab) => tab.id === state.activeTab,
-      )?.favicon;
-      const list = await changeBookmark({
-        url: state.url,
-        title: state.title || state.url,
-        ...(favicon ? { favicon } : {}),
-      });
-      target = list.find((row) => row.url === state.url);
+    if (bookmarkOpening.current || editingBookmark) return;
+    bookmarkOpening.current = true;
+    const generation = ++bookmarkGeneration.current;
+    try {
+      const previous = item ?? savedBookmark;
+      let target = previous;
+      if (!target) {
+        const favicon = state.tabs?.find(
+          (tab) => tab.id === state.activeTab,
+        )?.favicon;
+        const list = await changeBookmark({
+          url: state.url,
+          title: state.title || state.url,
+          ...(favicon ? { favicon } : {}),
+        });
+        target = list.find((row) => row.url === state.url);
+      }
+      if (
+        !target ||
+        !latest.current.active ||
+        generation !== bookmarkGeneration.current
+      )
+        return;
+      dismiss();
+      // Native views render above DOM dialogs. Keep a transient backdrop while the
+      // same live page is occluded; never reload or replace the browser tab.
+      const backdrop = state.url
+        ? await api.webPreview.capture().catch(() => undefined)
+        : undefined;
+      if (
+        !latest.current.active ||
+        generation !== bookmarkGeneration.current ||
+        latest.current.state.activeTab !== state.activeTab
+      )
+        return;
+      setPageBackdrop(backdrop);
+      setModal(true);
+      setEditingBookmark({ item: target, added: !previous });
+    } finally {
+      bookmarkOpening.current = false;
     }
-    if (!target || !latest.current.active) return;
-    dismiss();
-    setModal(true);
-    await layout(false);
-    setEditingBookmark({ item: target, added: !previous });
   };
   const bookmarkContext = async (node: BookmarkNode, x: number, y: number) => {
     const selected = await popup(
@@ -864,6 +917,14 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
         className={"browser-viewport" + (mobile ? " mobile" : "")}
         ref={viewport}
       >
+        {pageBackdrop && (
+          <img
+            className="browser-page-backdrop"
+            src={pageBackdrop}
+            alt=""
+            aria-hidden="true"
+          />
+        )}
         {!state.url && (
           <div className="browser-empty">
             <Globe size={44} />
