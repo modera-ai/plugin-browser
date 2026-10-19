@@ -16,6 +16,8 @@ const en = {
   bookmarkFolder: "Folder",
   bookmarkBar: "Bookmarks bar",
   moreBookmarks: "More bookmarks",
+  previousBookmarks: "Previous page",
+  nextBookmarks: "Next page",
   done: "Done",
   remove: "Remove",
   open: "Open",
@@ -70,6 +72,8 @@ const en = {
 };
 const zh: typeof en = {
   moreBookmarks: "更多书签",
+  previousBookmarks: "上一页",
+  nextBookmarks: "下一页",
   blank: "新标签页",
   close: "关闭",
   back: "后退",

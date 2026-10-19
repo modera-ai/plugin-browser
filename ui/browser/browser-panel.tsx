@@ -340,33 +340,57 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     };
   }, [state.contextMenu?.token, active, popup, execute, dismiss, text, fail]);
   const openFolder = async (items: BookmarkNode[], anchor: HTMLElement) => {
-    const stack: BookmarkNode[][] = [];
+    const stack: { nodes: BookmarkNode[]; page: number }[] = [];
+    // Stay within the shared menu's 100-entry/200-character request bounds.
+    const pageSize = 80;
     let nodes = items;
+    let page = 0;
     while (latest.current.active) {
       const rect = anchor.getBoundingClientRect();
       const selected = await popup(
         [
           ...(stack.length ? [{ id: "back", label: text.back }] : []),
-          ...nodes.map((node, index) => ({
-            id: String(index),
-            label: node.title,
-            icon: node.children ? ("box" as const) : ("globe" as const),
-          })),
+          ...nodes
+            .slice(page * pageSize, (page + 1) * pageSize)
+            .map((node, index) => {
+              const label = (node.title || node.url || text.bookmarkFolder)
+                .replace(/\s+/g, " ")
+                .trim();
+              return {
+                id: String(page * pageSize + index),
+                label:
+                  label.length > 200
+                    ? label.slice(0, 199).replace(/[\uD800-\uDBFF]$/, "") + "…"
+                    : label,
+                icon: node.children ? ("box" as const) : ("globe" as const),
+              };
+            }),
+          ...(page > 0
+            ? [{ id: "previous", label: text.previousBookmarks }]
+            : []),
+          ...((page + 1) * pageSize < nodes.length
+            ? [{ id: "next", label: text.nextBookmarks }]
+            : []),
         ],
         rect.left,
         rect.bottom,
         { variant: "dropdown", width: 360 },
       );
       if (selected === null) return;
+      if (selected === "previous" || selected === "next") {
+        page += selected === "next" ? 1 : -1;
+        continue;
+      }
       if (selected === "back") {
-        nodes = stack.pop()!;
+        ({ nodes, page } = stack.pop()!);
         continue;
       }
       const node = nodes[Number(selected)];
       if (!node) return;
       if (node.children) {
-        stack.push(nodes);
+        stack.push({ nodes, page });
         nodes = node.children;
+        page = 0;
       } else {
         if (node.url) command({ type: "navigate", url: node.url });
         return;
