@@ -205,6 +205,7 @@ export function BookmarkEditor({
               <span>{text.bookmarkFolder}</span>
               <Menu
                 className="browser-folder-select"
+                popupAlign="start"
                 label={text.bookmarkFolder}
                 triggerContent={
                   <>

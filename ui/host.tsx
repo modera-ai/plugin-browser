@@ -7,6 +7,8 @@ import { resolveLocale } from "@pal/contracts";
 import css from "./browser/style.css";
 // @ts-expect-error Public UI styles are bundled as text in trusted host modules.
 import uiCss from "@pal/ui/styles.css";
+// @ts-expect-error Text CSS imports do not expand styles.css @import rules.
+import menuCss from "@pal/ui/menu.css";
 
 export default function BrowserHostPanel(props: BrowserProps) {
   const theme = props.snapshot.theme;
@@ -16,7 +18,7 @@ export default function BrowserHostPanel(props: BrowserProps) {
     : "";
   return (
     <>
-      <style>{uiCss + css + variables}</style>
+      <style>{uiCss + menuCss + css + variables}</style>
       <UiProvider
         theme={theme?.mode}
         locale={
