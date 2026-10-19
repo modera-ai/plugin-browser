@@ -20,7 +20,7 @@ import {
   X,
   Folder,
 } from "@pal/ui/icons";
-import { Button, Tooltip } from "@pal/ui";
+import { Button, Input, Tooltip } from "@pal/ui";
 import { CameraIcon as Camera } from "@phosphor-icons/react/dist/csr/Camera";
 import { CaretDoubleRightIcon as ChevronsRight } from "@phosphor-icons/react/dist/csr/CaretDoubleRight";
 import type { PanelMenuRequest, WebPreviewCommand } from "@pal/contracts";
@@ -36,6 +36,7 @@ import { MousePointer2, Puzzle } from "lucide-react";
 import { messages } from "./messages";
 import { useBrowser } from "./use-browser";
 import { BrowserErrorPage } from "./error-page";
+import { addressTarget, useAddressSuggestions } from "./use-address-suggestions";
 import { BookmarkEditor } from "./bookmark-editor";
 import { useBookmarkOverflow } from "./use-bookmark-overflow";
 import {
@@ -177,6 +178,15 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     return () => window.removeEventListener("keydown", key);
   }, [active, api, snapshot.theme?.mode, command]);
   const [bookmarks, setBookmarks] = useState(initial?.bookmarks ?? []);
+  const addressSuggestions = useAddressSuggestions(invokeData, bookmarks, text.addressSearch);
+  const addressInput = useRef<HTMLInputElement>(null);
+  const navigateAddress = (value: string) => {
+    if (!value.trim()) return;
+    addressSuggestions.setOpen(false);
+    command({ type: "navigate", url: addressTarget(value) });
+    addressInput.current?.blur();
+    addressFocused.current = false;
+  };
   useEffect(() => {
     if (!active) return;
     let cancelled = false;
@@ -215,6 +225,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
       setEditingBookmark(null);
       setDataDialog(null);
       setExtensionsOpen(false);
+      addressSuggestions.setOpen(false);
     }
   }, [active]);
   useEffect(
@@ -826,15 +837,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
         className="browser-toolbar"
         onSubmit={(event) => {
           event.preventDefault();
-          const value = address.trim();
-          if (value)
-            command({
-              type: "navigate",
-              url: /^[a-z][a-z\d+.-]*:/i.test(value)
-                ? value
-                : "https://" + value,
-            });
-          addressFocused.current = false;
+          navigateAddress(address);
         }}
       >
         <div className="browser-toolbar-group browser-navigation">
@@ -867,18 +870,26 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
         </div>
         <div className="browser-address">
           <Globe size={16} />
-          <input
+          <Input
+            ref={addressInput}
+            className="browser-address-input"
+            label={text.address}
+            hideLabel
             value={address}
             placeholder={text.address}
-            aria-label={text.address}
             spellCheck={false}
-            onFocus={() => {
+            suggestions={active ? addressSuggestions.suggestions : undefined}
+            filterSuggestions={false}
+            inlineCompletion
+            onSuggestionsOpenChange={addressSuggestions.setOpen}
+            onSuggestionQueryChange={addressSuggestions.setQuery}
+            onSuggestionSelect={navigateAddress}
+            onFocus={(event) => {
               addressFocused.current = true;
+              event.currentTarget.select();
             }}
-            onBlur={() => {
-              addressFocused.current = false;
-            }}
-            onChange={(event) => setAddress(event.target.value)}
+            onBlur={() => { addressFocused.current = false; }}
+            onChange={setAddress}
           />
           <Tooltip content={text.go} side="top">
             <button type="submit" className="browser-go" aria-label={text.go}>

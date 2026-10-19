@@ -667,3 +667,8 @@
 .browser-error-content ul { margin: 0 0 24px; padding-left: 22px; color: var(--mu-muted); }
 .browser-error-content .browser-error-try { margin-bottom: 0; }
 .browser-error-code { display: block; margin-bottom: 32px; color: var(--mu-muted); font-size: 12px; }
+
+.browser-address > .mu-input-suggestion-anchor { flex: 1; min-width: 0; }
+.browser-address-input.mu-field { gap: 0; min-width: 0; }
+.browser-address-input .mu-input-shell { min-height: 0; height: auto; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.browser-address-input .mu-input-shell:focus-within { border: 0; box-shadow: none; }
