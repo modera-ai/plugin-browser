@@ -123,11 +123,13 @@ export const activate: PluginModule["activate"] = async (host) => {
         "storage.read",
         "storage.write",
       ],
+      actionLimits: { maxValueChars: 4000, timeoutMs: 120000 },
       commands: [
         "modera.browser.open",
         "modera.browser.new-tab",
         "modera.browser.visit",
         "modera.browser.bookmark",
+        "modera.browser.data",
       ],
       async render(request, context) {
         let url = "";

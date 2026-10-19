@@ -98,6 +98,19 @@ export class BrowserStore {
       await this.write("history.json", JSON.stringify(list.slice(0, 5000)));
     });
   }
+  clearHistorySince(since: number, signal: AbortSignal) {
+    if (!Number.isFinite(since) || since < 0)
+      throw new Error("Invalid time range");
+    return this.change(async () => {
+      signal.throwIfAborted();
+      const records = await this.history();
+      signal.throwIfAborted();
+      await this.write(
+        "history.json",
+        JSON.stringify(records.filter((item) => item.visitedAt < since)),
+      );
+    });
+  }
   removeHistory(ids: string[] | null) {
     return this.change(async () => {
       await this.write(

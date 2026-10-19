@@ -101,6 +101,10 @@ export class BrowserDataActions {
       ]);
       return { ok: true };
     }
+    if (action.id === "clearHistoryRange") {
+      await this.store.clearHistorySince(Number(value.since), signal);
+      return { ok: true };
+    }
     if (action.id === "history") {
       return (await this.store.history())
         .filter((x) =>

@@ -31,6 +31,12 @@ import { messages } from "./messages";
 import { useBrowser } from "./use-browser";
 import { BookmarkEditor } from "./bookmark-editor";
 import { useBookmarkOverflow } from "./use-bookmark-overflow";
+import {
+  BrowserImportDialog,
+  type BrowserDataCall,
+} from "../../src/browser-import-dialog";
+import { ClearDataDialog } from "./clear-data-dialog";
+import { DeviceToolbar, deviceDefaults, type Device } from "./device-toolbar";
 type MenuItem = PanelMenuRequest["items"][number];
 const preference = "pal.browser.multiple-tabs";
 
@@ -79,12 +85,89 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     initial?.managed,
   );
   const root = useRef<HTMLDivElement>(null),
-    viewport = useRef<HTMLDivElement>(null),
-    findInput = useRef<HTMLInputElement>(null);
+    viewport = useRef<HTMLDivElement>(null);
   const [address, setAddress] = useState("");
   const addressFocused = useRef(false);
-  const [find, setFind] = useState(false),
-    [mobile, setMobile] = useState(false);
+  const [deviceOpen, setDeviceOpen] = useState(() => {
+    try {
+      return localStorage.getItem("pal.browser.device-always") === "true";
+    } catch {
+      return false;
+    }
+  });
+  const [device, setDevice] = useState<Device>(deviceDefaults);
+  const [alwaysDevice, setAlwaysDevice] = useState(() => {
+    try {
+      return localStorage.getItem("pal.browser.device-always") === "true";
+    } catch {
+      return false;
+    }
+  });
+  const deviceTabs = useRef(new Set<string>());
+  useEffect(() => {
+    if (state.activeTab && !deviceTabs.current.has(state.activeTab)) {
+      deviceTabs.current.add(state.activeTab);
+      if (alwaysDevice) setDeviceOpen(true);
+    }
+  }, [state.activeTab, alwaysDevice]);
+  const [dataDialog, setDataDialog] = useState<"import" | "clear" | null>(null);
+  const invokeData: BrowserDataCall = useCallback(
+    (operation, value = {}) =>
+      api.commands.execute("modera.browser.data", { operation, value }),
+    [api],
+  );
+  const report = useCallback(
+    (error: unknown) => {
+      console.error("Browser action failed", error);
+      fail();
+    },
+    [fail],
+  );
+  useEffect(() => {
+    if (!active || !state.activeTab) return;
+    const timer = setTimeout(
+      () =>
+        command({
+          type: "device",
+          enabled: deviceOpen,
+          width: device.width,
+          height: device.height,
+          mobile: device.mobile,
+          scale: device.scale,
+        }),
+      100,
+    );
+    return () => clearTimeout(timer);
+  }, [active, state.activeTab, deviceOpen, device, command]);
+  useEffect(() => {
+    if (!active || !state.activeTab) return;
+    command({
+      type: "find-toolbar",
+      open: false,
+      dark: snapshot.theme?.mode === "dark",
+    });
+  }, [active, state.activeTab, snapshot.theme?.mode, command]);
+  const openFind = () =>
+    command({
+      type: "find-toolbar",
+      open: true,
+      dark: snapshot.theme?.mode === "dark",
+    });
+  useEffect(() => {
+    if (!active) return;
+    const key = (event: KeyboardEvent) => {
+      if (
+        (event.ctrlKey || event.metaKey) &&
+        event.key.toLowerCase() === "f" &&
+        root.current?.contains(event.composedPath()[0] as Node)
+      ) {
+        event.preventDefault();
+        openFind();
+      }
+    };
+    window.addEventListener("keydown", key);
+    return () => window.removeEventListener("keydown", key);
+  }, [active, api, snapshot.theme?.mode, command]);
   const [bookmarks, setBookmarks] = useState(initial?.bookmarks ?? []);
   useEffect(() => {
     if (!active) return;
@@ -126,6 +209,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
       bookmarkGeneration.current++;
       setPageBackdrop(undefined);
       setEditingBookmark(null);
+      setDataDialog(null);
       setModal(false);
     }
   }, [active]);
@@ -234,8 +318,8 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     state.multipleTabs,
     active,
     modal,
-    mobile,
-    find,
+    deviceOpen,
+    device,
     bookmarks.length,
     layout,
   ]);
@@ -452,6 +536,11 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     let zoom = state.zoomFactor ?? 1;
     const hasPage = !!state.url;
     const items = (): MenuItem[] => [
+      {
+        id: "multiple",
+        label: checks(state.multipleTabs !== false, text.multiple),
+      },
+      { id: "group-tabs", label: "", separator: true },
       { id: "find", label: text.find, disabled: !hasPage },
       { id: "group-zoom", label: "", separator: true },
       {
@@ -476,23 +565,32 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
         id: "device",
         label: text.device,
         children: [
-          { id: "desktop", label: checks(!mobile, text.desktop) },
-          { id: "mobile", label: checks(mobile, text.mobile) },
+          {
+            id: "device-toggle",
+            label: deviceOpen ? text.deviceHide : text.deviceShow,
+          },
+          {
+            id: "device-always",
+            label: checks(alwaysDevice, text.deviceAlways),
+          },
         ],
       },
       { id: "screenshot", label: text.screenshot, disabled: !hasPage },
       { id: "group-data", label: "", separator: true },
-      { id: "settings:import", label: text.import },
-      { id: "settings:bookmarks", label: text.bookmarks },
-      { id: "settings:passwords", label: text.passwords },
-      { id: "settings:history", label: text.history },
+      { id: "import", label: text.import },
+      {
+        id: "data",
+        label: text.browsingData,
+        children: [
+          { id: "settings:bookmarks", label: text.bookmarks },
+          { id: "settings:passwords", label: text.passwords },
+          { id: "settings:history", label: text.history },
+          { id: "settings:cookies", label: text.cookies },
+        ],
+      },
       {
         id: "clear",
         label: text.clearData,
-        children: [
-          { id: "clear-cache", label: text.clearCache },
-          { id: "clear-cookies", label: text.clearCookies },
-        ],
       },
       {
         id: "tools",
@@ -500,14 +598,9 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
         children: [
           { id: "hard-reload", label: text.hardReload, disabled: !hasPage },
           { id: "devtools", label: text.devtools, disabled: !hasPage },
-          { id: "settings:cookies", label: text.cookies },
         ],
       },
       { id: "group-settings", label: "", separator: true },
-      {
-        id: "multiple",
-        label: checks(state.multipleTabs !== false, text.multiple),
-      },
       { id: "settings:settings", label: text.settings },
     ];
     const selected = await popup(
@@ -540,35 +633,46 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
       return api.openSettings(
         selected === "settings:settings" ? "" : selected.slice(9),
       );
-    if (selected === "mobile" || selected === "desktop") {
-      setMobile(selected === "mobile");
+    if (selected === "device-toggle") {
+      setDeviceOpen((value) => !value);
+      return;
+    }
+    if (selected === "device-always") {
+      const value = !alwaysDevice;
+      setAlwaysDevice(value);
+      try {
+        localStorage.setItem("pal.browser.device-always", String(value));
+      } catch {}
       return;
     }
     if (selected === "find") {
-      setFind(true);
-      requestAnimationFrame(() => findInput.current?.focus());
+      openFind();
       return;
     }
-    if (selected === "clear-cache" || selected === "clear-cookies") {
+    if (selected === "import" || selected === "clear") {
+      const generation = ++bookmarkGeneration.current;
+      const page = latest.current.state.activeTab;
+      const backdrop = state.url
+        ? await api.webPreview.capture().catch(() => undefined)
+        : undefined;
+      if (
+        !latest.current.active ||
+        generation !== bookmarkGeneration.current ||
+        latest.current.state.activeTab !== page
+      )
+        return;
+      setPageBackdrop(backdrop);
       setModal(true);
-      await layout(false);
-      try {
-        if (
-          await api.dialog.confirm({
-            title: text.clearTitle,
-            content: text.clearHint,
-          })
-        )
-          await execute({ type: selected });
-      } finally {
-        setModal(false);
-      }
+      setDataDialog(selected);
       return;
     }
     await execute({
       type: selected as "screenshot" | "hard-reload" | "devtools",
     });
+    if (selected === "screenshot" && latest.current.active)
+      await api.toast.show({ level: "success", text: text.copiedScreenshot });
   };
+
   const changeBookmark = async (
     input: Bookmark & { operation?: "save" | "remove" },
   ) => {
@@ -888,31 +992,28 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           {status}
         </div>
       )}
-      {find && (
-        <div className="browser-find">
-          <Search size={16} />
-          <input
-            ref={findInput}
-            placeholder={text.find}
-            aria-label={text.find}
-            onChange={(event) =>
-              command({ type: "find", text: event.target.value })
-            }
-            onKeyDown={(event) => {
-              if (event.key === "Escape") {
-                setFind(false);
-                command({ type: "find", text: "" });
-              }
-            }}
-          />
-          {button(text.close, X, () => {
-            setFind(false);
-            command({ type: "find", text: "" });
-          })}
-        </div>
+      {deviceOpen && (
+        <DeviceToolbar
+          text={text}
+          value={device}
+          change={setDevice}
+          close={() => setDeviceOpen(false)}
+        />
       )}
       <div
-        className={"browser-viewport" + (mobile ? " mobile" : "")}
+        className="browser-viewport"
+        style={
+          deviceOpen
+            ? {
+                width: Math.min(device.width * device.scale, 8000),
+                maxWidth: "100%",
+                height: device.height * device.scale,
+                maxHeight: "100%",
+                flex: "0 1 auto",
+                alignSelf: "center",
+              }
+            : undefined
+        }
         ref={viewport}
       >
         {pageBackdrop && (
@@ -931,6 +1032,41 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           </div>
         )}
       </div>
+      {dataDialog === "import" && (
+        <BrowserImportDialog
+          locale={snapshot.locale}
+          invoke={invokeData}
+          close={() => {
+            setDataDialog(null);
+            setModal(false);
+          }}
+          fail={report}
+          notify={() => {
+            void api.toast.show({ level: "success", text: text.imported });
+          }}
+        />
+      )}
+      {dataDialog === "clear" && (
+        <ClearDataDialog
+          text={text}
+          close={() => {
+            setDataDialog(null);
+            setModal(false);
+          }}
+          fail={report}
+          clear={async (value) => {
+            await execute({
+              type: "clear-data",
+              cookies: value.cookies,
+              cache: value.cache,
+              downloads: value.downloads,
+            });
+            if (value.history)
+              await invokeData("clearHistoryRange", { since: value.since });
+            await api.toast.show({ level: "success", text: text.cleared });
+          }}
+        />
+      )}
       {editingBookmark && (
         <BookmarkEditor
           item={editingBookmark.item}

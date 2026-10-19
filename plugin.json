@@ -1144,6 +1144,7 @@
     "plugin.browser.navigation": 1,
     "frontend.webPreview.tabs": 2,
     "frontend.webPreview.contextMenu": 2,
+    "frontend.webPreview.pageTools": 1,
     "plugin.hostPanel": 1,
     "plugin.hostPanel.workspace": 1,
     "plugin.hostPanel.webPreview": 1,
@@ -1768,6 +1769,32 @@
           ],
           "inputSchema": {
             "oneOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "operation": {
+                    "const": "clearHistoryRange"
+                  },
+                  "value": {
+                    "type": "object",
+                    "properties": {
+                      "since": {
+                        "type": "number",
+                        "minimum": 0
+                      }
+                    },
+                    "required": [
+                      "since"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "operation",
+                  "value"
+                ],
+                "additionalProperties": false
+              },
               {
                 "type": "object",
                 "properties": {

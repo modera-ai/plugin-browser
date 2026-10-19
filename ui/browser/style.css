@@ -278,14 +278,6 @@
   font-size: 12px;
   border-bottom: 1px solid var(--mu-line);
 }
-.browser-find {
-  display: flex;
-  flex: none;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  border-bottom: 1px solid var(--mu-line);
-}
 .browser-viewport {
   position: relative;
   flex: 1;
@@ -466,4 +458,87 @@
   .browser-bookmark-layout {
     gap: 12px;
   }
+}
+
+.browser-device-toolbar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 5px 10px;
+  border-bottom: 1px solid var(--mu-line);
+  font: inherit;
+  overflow-x: auto;
+}
+.browser-device-toolbar select,
+.browser-device-toolbar input {
+  background: var(--mu-control);
+  color: var(--mu-ink);
+  border: 1px solid var(--mu-line);
+  border-radius: 7px;
+  height: 28px;
+  padding: 3px 7px;
+  font: inherit;
+}
+.browser-device-toolbar input {
+  width: 68px;
+}
+.browser-device-close {
+  margin-left: auto;
+}
+.browser-clear-dialog {
+  width: min(640px, calc(100vw - 32px));
+}
+.browser-clear-ranges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.browser-clear-ranges button {
+  padding: 5px 10px;
+  border: 1px solid var(--mu-line);
+  border-radius: 8px;
+  background: var(--mu-control);
+  color: var(--mu-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.browser-clear-ranges button[aria-pressed="true"] {
+  background: var(--mu-ink);
+  color: var(--mu-page);
+}
+.browser-clear-rows {
+  border: 1px solid var(--mu-line);
+  border-radius: 12px;
+  padding: 0 14px;
+}
+.browser-clear-rows label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 3px;
+  cursor: pointer;
+}
+.browser-clear-rows label + label {
+  border-top: 1px solid var(--mu-line);
+}
+.browser-clear-rows label > span {
+  flex: 1;
+}
+.browser-clear-rows small {
+  display: block;
+  color: var(--mu-muted);
+  margin-top: 3px;
+}
+.browser-clear-rows strong {
+  font-weight: 500;
+}
+.browser-clear-rows input {
+  accent-color: var(--mu-accent);
+}
+.browser-clear-rows .disabled {
+  opacity: 0.5;
+  cursor: default;
 }
