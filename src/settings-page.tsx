@@ -20,6 +20,22 @@ export function BrowserSettings() {
   const [navigation, setNavigation] = useState({ entries: initialRoute ? ["", initialRoute] : [""], index: initialRoute ? 1 : 0 });
   const route = navigation.entries[navigation.index]!;
   const setRoute = (next: string) => setNavigation(current => current.entries[current.index] === next ? current : ({ entries: [...current.entries.slice(0, current.index + 1), next], index: current.index + 1 }));
+  useEffect(() => {
+    const followRoute = () => {
+      const requested = window.location.hash.slice(1);
+      const next = ["bookmarks", "passwords", "history", "cookies", "import"].includes(requested) ? requested : "";
+      setNavigation({ entries: next ? ["", next] : [""], index: next ? 1 : 0 });
+    };
+    followRoute();
+    window.addEventListener("hashchange", followRoute);
+    return () => window.removeEventListener("hashchange", followRoute);
+  }, []);
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    if (url.hash.slice(1) === route) return;
+    url.hash = route;
+    window.history.replaceState(null, "", url.href);
+  }, [route]);
   const [importOpen, setImportOpen] = useState(false);
   const [sources, setSources] = useState<Source[]>([]);
   const [selected, setSelected] = useState("");

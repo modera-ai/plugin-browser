@@ -690,9 +690,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
         : state.error.includes("blocked")
           ? text.blocked
           : text.loadFailed
-    : state.loading
-      ? text.loading
-      : "";
+    : "";
   return (
     <div className="browser-panel" ref={root}>
       {state.multipleTabs !== false && (

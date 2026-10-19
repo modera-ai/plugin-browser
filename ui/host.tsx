@@ -1,7 +1,7 @@
 import React from "react";
 import BrowserPanel from "./browser/browser-panel";
 import type { BrowserProps } from "./browser/types";
-import { UiProvider } from "@pal/ui/provider";
+import { UiProvider } from "@pal/ui";
 import { resolveLocale } from "@pal/contracts";
 // @ts-expect-error The host renderer embeds its styles in the panel ShadowRoot.
 import css from "./browser/style.css";
