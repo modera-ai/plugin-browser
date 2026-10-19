@@ -19,6 +19,8 @@ import {
   X,
   Folder,
 } from "@pal/ui/icons";
+import { Tooltip } from "@pal/ui";
+import { CameraIcon as Camera } from "@phosphor-icons/react/dist/csr/Camera";
 import { CaretDoubleRightIcon as ChevronsRight } from "@phosphor-icons/react/dist/csr/CaretDoubleRight";
 import type { PanelMenuRequest, WebPreviewCommand } from "@pal/contracts";
 import {
@@ -529,6 +531,16 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
       localStorage.setItem(preference, String(multiple));
     } catch {}
   };
+  const captureScreenshot = async () => {
+    await execute({ type: "screenshot" });
+    if (latest.current.active)
+      await api.toast.show({
+        key: "browser-screenshot",
+        level: "success",
+        text: text.copiedScreenshot,
+        durationMs: 3000,
+      });
+  };
   const showMenu = async (anchor: HTMLElement) => {
     const rect = anchor.getBoundingClientRect();
     const checks = (checked: boolean, label: string) =>
@@ -605,9 +617,9 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     ];
     const selected = await popup(
       items(),
-      rect.right - 320,
+      rect.right - 288,
       rect.bottom,
-      { variant: "dropdown", width: 320 },
+      { variant: "dropdown", width: 288 },
       async (action) => {
         try {
           const next = await execute({
@@ -666,11 +678,8 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
       setDataDialog(selected);
       return;
     }
-    await execute({
-      type: selected as "screenshot" | "hard-reload" | "devtools",
-    });
-    if (selected === "screenshot" && latest.current.active)
-      await api.toast.show({ level: "success", text: text.copiedScreenshot });
+    if (selected === "screenshot") return captureScreenshot();
+    await execute({ type: selected as "hard-reload" | "devtools" });
   };
 
   const changeBookmark = async (
@@ -776,15 +785,16 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     onClick: () => void,
     disabled = false,
   ) => (
-    <button
-      type="button"
-      title={label}
-      aria-label={label}
-      disabled={disabled}
-      onClick={onClick}
-    >
-      <Icon size={18} />
-    </button>
+    <Tooltip content={label} side="top">
+      <button
+        type="button"
+        aria-label={label}
+        disabled={disabled}
+        onClick={onClick}
+      >
+        <Icon size={16} />
+      </button>
+    </Tooltip>
   );
   const status = state.error
     ? state.error === "timeout"
@@ -806,19 +816,20 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
               }
               key={tab.id}
             >
-              <button
-                type="button"
-                role="tab"
-                aria-selected={tab.id === state.activeTab}
-                title={tab.url || text.blank}
-                onClick={() => command({ type: "tab-select", id: tab.id })}
-              >
-                <TabIcon key={tab.favicon} src={tab.favicon} />
-                <span>
-                  {tab.title ||
-                    (tab.url ? new URL(tab.url).hostname : text.blank)}
-                </span>
-              </button>
+              <Tooltip content={tab.url || text.blank} side="top">
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={tab.id === state.activeTab}
+                  onClick={() => command({ type: "tab-select", id: tab.id })}
+                >
+                  <TabIcon key={tab.favicon} src={tab.favicon} />
+                  <span>
+                    {tab.title ||
+                      (tab.url ? new URL(tab.url).hostname : text.blank)}
+                  </span>
+                </button>
+              </Tooltip>
               {button(text.close, X, () =>
                 command({ type: "tab-close", id: tab.id }),
               )}
@@ -856,16 +867,19 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
             !state.canGoForward,
           )}
           <span className="browser-toolbar-divider" aria-hidden="true" />
-          <button
-            type="button"
-            className={"browser-reload" + (state.loading ? " loading" : "")}
-            title={state.loading ? text.stop : text.reload}
-            aria-label={state.loading ? text.stop : text.reload}
-            onClick={() => command({ type: state.loading ? "stop" : "reload" })}
-          >
-            <RefreshCw className="browser-reload-icon" size={18} />
-            {state.loading && <X className="browser-stop-icon" size={18} />}
-          </button>
+          <Tooltip content={state.loading ? text.stop : text.reload} side="top">
+            <button
+              type="button"
+              className={"browser-reload" + (state.loading ? " loading" : "")}
+              aria-label={state.loading ? text.stop : text.reload}
+              onClick={() =>
+                command({ type: state.loading ? "stop" : "reload" })
+              }
+            >
+              <RefreshCw className="browser-reload-icon" size={18} />
+              {state.loading && <X className="browser-stop-icon" size={18} />}
+            </button>
+          </Tooltip>
         </div>
         <div className="browser-address">
           <Globe size={16} />
@@ -882,16 +896,21 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
             }}
             onChange={(event) => setAddress(event.target.value)}
           />
-          <button
-            type="submit"
-            className="browser-go"
-            title={text.go}
-            aria-label={text.go}
-          >
-            <ArrowRight size={18} />
-          </button>
+          <Tooltip content={text.go} side="top">
+            <button type="submit" className="browser-go" aria-label={text.go}>
+              <ArrowRight size={18} />
+            </button>
+          </Tooltip>
         </div>
         <div className="browser-toolbar-group browser-actions">
+          {button(
+            text.screenshot,
+            Camera,
+            () => {
+              void captureScreenshot().catch(report);
+            },
+            !/^https?:/.test(state.url),
+          )}
           {button(
             text.external,
             ExternalLink,
@@ -904,27 +923,32 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
                 .execute("modera.browser.new-tab", {})
                 .catch(fail);
             })}
-          <button
-            type="button"
-            title={savedBookmark ? text.bookmarkEdit : text.bookmark}
-            aria-label={savedBookmark ? text.bookmarkEdit : text.bookmark}
-            aria-pressed={!!savedBookmark}
-            className="browser-bookmark-toggle"
-            disabled={!/^https?:/.test(state.url)}
-            onClick={() => void editBookmark().catch(fail)}
+          <Tooltip
+            content={savedBookmark ? text.bookmarkEdit : text.bookmark}
+            side="top"
           >
-            <Star size={18} weight={savedBookmark ? "fill" : "regular"} />
-          </button>
-          <button
-            type="button"
-            title={text.menu}
-            aria-label={text.menu}
-            onClick={(event) => {
-              void showMenu(event.currentTarget).catch(fail);
-            }}
-          >
-            <MoreHorizontal size={18} />
-          </button>
+            <button
+              type="button"
+              aria-label={savedBookmark ? text.bookmarkEdit : text.bookmark}
+              aria-pressed={!!savedBookmark}
+              className="browser-bookmark-toggle"
+              disabled={!/^https?:/.test(state.url)}
+              onClick={() => void editBookmark().catch(fail)}
+            >
+              <Star size={18} weight={savedBookmark ? "fill" : "regular"} />
+            </button>
+          </Tooltip>
+          <Tooltip content={text.menu} side="top">
+            <button
+              type="button"
+              aria-label={text.menu}
+              onClick={(event) => {
+                void showMenu(event.currentTarget).catch(fail);
+              }}
+            >
+              <MoreHorizontal size={18} />
+            </button>
+          </Tooltip>
         </div>
       </form>
       {!!tree.length && (
@@ -934,57 +958,61 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           aria-label={text.bookmarks}
         >
           {tree.map((node, index) => (
+            <Tooltip key={index} content={node.title} side="top">
+              <button
+                type="button"
+                data-bookmark-item
+                data-overflow={index >= bookmarkOverflow.visible || undefined}
+                inert={index >= bookmarkOverflow.visible}
+                aria-hidden={index >= bookmarkOverflow.visible || undefined}
+                onContextMenu={(event) => {
+                  event.preventDefault();
+                  void bookmarkContext(
+                    node,
+                    event.clientX,
+                    event.clientY,
+                  ).catch(fail);
+                }}
+                onClick={(event) => {
+                  if (node.children)
+                    void openFolder(node.children, event.currentTarget).catch(
+                      fail,
+                    );
+                  else if (node.url)
+                    command({ type: "navigate", url: node.url });
+                }}
+              >
+                {node.children ? (
+                  <Folder size={14} />
+                ) : (
+                  <TabIcon
+                    key={node.favicon ?? node.url}
+                    src={bookmarkIcon(node, state.tabs)}
+                  />
+                )}
+                <span>{node.title}</span>
+              </button>
+            </Tooltip>
+          ))}
+          <Tooltip content={text.moreBookmarks} side="top">
             <button
               type="button"
-              key={index}
-              title={node.title}
-              data-bookmark-item
-              data-overflow={index >= bookmarkOverflow.visible || undefined}
-              inert={index >= bookmarkOverflow.visible}
-              aria-hidden={index >= bookmarkOverflow.visible || undefined}
-              onContextMenu={(event) => {
-                event.preventDefault();
-                void bookmarkContext(node, event.clientX, event.clientY).catch(
-                  fail,
-                );
-              }}
+              className="browser-bookmarks-more"
+              aria-label={text.moreBookmarks}
+              aria-haspopup="menu"
+              data-empty={bookmarkOverflow.visible >= tree.length || undefined}
+              inert={bookmarkOverflow.visible >= tree.length}
+              aria-hidden={bookmarkOverflow.visible >= tree.length || undefined}
               onClick={(event) => {
-                if (node.children)
-                  void openFolder(node.children, event.currentTarget).catch(
-                    fail,
-                  );
-                else if (node.url) command({ type: "navigate", url: node.url });
+                void openFolder(
+                  tree.slice(bookmarkOverflow.visible),
+                  event.currentTarget,
+                ).catch(fail);
               }}
             >
-              {node.children ? (
-                <Folder size={14} />
-              ) : (
-                <TabIcon
-                  key={node.favicon ?? node.url}
-                  src={bookmarkIcon(node, state.tabs)}
-                />
-              )}
-              <span>{node.title}</span>
+              <ChevronsRight size={16} />
             </button>
-          ))}
-          <button
-            type="button"
-            className="browser-bookmarks-more"
-            title={text.moreBookmarks}
-            aria-label={text.moreBookmarks}
-            aria-haspopup="menu"
-            data-empty={bookmarkOverflow.visible >= tree.length || undefined}
-            inert={bookmarkOverflow.visible >= tree.length}
-            aria-hidden={bookmarkOverflow.visible >= tree.length || undefined}
-            onClick={(event) => {
-              void openFolder(
-                tree.slice(bookmarkOverflow.visible),
-                event.currentTarget,
-              ).catch(fail);
-            }}
-          >
-            <ChevronsRight size={16} />
-          </button>
+          </Tooltip>
         </nav>
       )}
       {!!status && (

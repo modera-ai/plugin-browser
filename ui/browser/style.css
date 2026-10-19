@@ -113,10 +113,10 @@
   gap: 8px;
   min-width: 0;
   margin: 0;
-  height: 48px;
-  min-height: 48px;
-  flex-basis: 48px;
-  padding: 6px 8px;
+  height: 40px;
+  min-height: 40px;
+  flex-basis: 40px;
+  padding: 4px 8px;
   border-bottom: 1px solid var(--mu-line);
   background: var(--mu-page);
 }
@@ -125,7 +125,7 @@
   flex: none;
   align-items: center;
   gap: 2px;
-  height: 32px;
+  height: 30px;
   padding: 1px 5px;
   border: 1px solid var(--mu-line);
   border-radius: 999px;
@@ -133,8 +133,8 @@
   box-shadow: none;
 }
 .browser-toolbar button {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   transition: background-color 120ms ease;
 }
@@ -541,4 +541,21 @@
 .browser-clear-rows .disabled {
   opacity: 0.5;
   cursor: default;
+}
+
+/* The native page starts below the 40px chrome. Public toasts must stay in that
+   uncovered strip rather than behind the WebContentsView at the bottom. */
+:host [data-pal-interactions] .pal-notices:not(.messages) {
+  top: 2px;
+  bottom: auto;
+  left: 8px;
+  right: auto;
+  max-width: min(420px, calc(100% - 16px));
+  max-height: 36px;
+}
+:host [data-pal-interactions] .pal-toast-wrap {
+  padding: 3px;
+}
+:host [data-pal-interactions] section[data-kind="toast"] {
+  padding: 6px 10px;
 }

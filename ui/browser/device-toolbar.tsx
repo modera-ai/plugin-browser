@@ -1,3 +1,4 @@
+import { Tooltip } from "@pal/ui";
 import React from "react";
 import { RotateCw, X } from "lucide-react";
 import type { messages } from "./messages";
@@ -85,20 +86,21 @@ export function DeviceToolbar({
             change({ ...value, height, preset: "responsive" });
         }}
       />
-      <button
-        title={t.rotate}
-        aria-label={t.rotate}
-        onClick={() =>
-          change({
-            ...value,
-            width: value.height,
-            height: Math.min(4320, value.width),
-            preset: "responsive",
-          })
-        }
-      >
-        <RotateCw size={16} />
-      </button>
+      <Tooltip content={t.rotate} side="top">
+        <button
+          aria-label={t.rotate}
+          onClick={() =>
+            change({
+              ...value,
+              width: value.height,
+              height: Math.min(4320, value.width),
+              preset: "responsive",
+            })
+          }
+        >
+          <RotateCw size={16} />
+        </button>
+      </Tooltip>
       <select
         aria-label={t.zoom}
         value={value.scale}
@@ -112,14 +114,15 @@ export function DeviceToolbar({
           </option>
         ))}
       </select>
-      <button
-        className="browser-device-close"
-        title={t.close}
-        aria-label={t.close}
-        onClick={close}
-      >
-        <X size={16} />
-      </button>
+      <Tooltip content={t.close} side="top">
+        <button
+          className="browser-device-close"
+          aria-label={t.close}
+          onClick={close}
+        >
+          <X size={16} />
+        </button>
+      </Tooltip>
     </div>
   );
 }

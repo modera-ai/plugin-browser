@@ -20,6 +20,7 @@ export default function BrowserHostPanel(props: BrowserProps) {
     <>
       <style>{uiCss + menuCss + css + variables}</style>
       <UiProvider
+        density="compact"
         theme={theme?.mode}
         locale={
           resolveLocale(props.snapshot.locale, ["en", "zh"]) === "zh"
