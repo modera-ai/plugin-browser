@@ -125,7 +125,7 @@ export const activate: PluginModule["activate"] = async (host) => {
         "storage.write",
         "process.spawn",
       ],
-      actionLimits: { maxValueChars: 4000, timeoutMs: 120000 },
+      actionLimits: { maxValueChars: 4000, timeoutMs: 60000 },
       commands: [
         "modera.browser.open",
         "modera.browser.new-tab",
