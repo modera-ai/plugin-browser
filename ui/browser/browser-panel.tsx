@@ -897,6 +897,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           <CapsuleButton
             type="button"
             className="browser-annotate-toggle"
+            hoverTone="accent"
             aria-label={text.annotate}
             aria-pressed={!!state.annotations?.selecting}
             disabled={!/^https?:/.test(state.url)}

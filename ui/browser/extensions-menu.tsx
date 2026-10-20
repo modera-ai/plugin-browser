@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Button, Menu, PopoverMorph, Tooltip } from "@pal/ui";
+import { Button, CapsuleButton, Menu, PopoverMorph, Tooltip } from "@pal/ui";
 import { Pin, PinOff, Puzzle, ExternalLink, Settings2 } from "lucide-react";
 import type { WebPreviewCommand, WebPreviewState } from "@pal/contracts";
 import type { messages } from "./messages";
@@ -129,31 +129,27 @@ export function ExtensionsMenu(
         .slice(0, 3)
         .map((extension) => (
           <Tooltip key={extension.id} content={extension.name}>
-            <Button
+            <CapsuleButton
               className="browser-extension-toolbar-button"
-              variant="ghost"
-              size="small"
               disabled={busy || !available}
               aria-label={extension.name}
               onClick={(event) => launch(extension, event.currentTarget)}
             >
               <ExtensionIcon extension={extension} />
-            </Button>
+            </CapsuleButton>
           </Tooltip>
         ))}
       <Tooltip content={text.extensions}>
-        <Button
+        <CapsuleButton
           ref={anchor}
           className="browser-extension-toolbar-button"
-          variant="ghost"
-          size="small"
           aria-label={text.extensions}
           aria-expanded={open}
           aria-haspopup="dialog"
           onClick={() => changeOpen(!open)}
         >
           <Puzzle size={16} />
-        </Button>
+        </CapsuleButton>
       </Tooltip>
       <span
         ref={popupAnchor}
