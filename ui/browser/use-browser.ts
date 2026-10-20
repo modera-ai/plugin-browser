@@ -19,6 +19,7 @@ export function useBrowser(
   managed = false,
 ) {
   const [state, setState] = useState(empty);
+  const [modeReady, setModeReady] = useState(false);
   const initialized = useRef(false);
   const ready = useRef(false);
   const deferred = useRef(
@@ -103,6 +104,7 @@ export function useBrowser(
         multiple = checkpoint.multiple !== false;
       await execute({ type: "tabs-mode", multiple });
       if (cancelled) return;
+      setModeReady(true);
       if (
         !initialized.current &&
         checkpoint &&
@@ -215,6 +217,7 @@ export function useBrowser(
         if (claimed.openRequest)
           await api.commands.execute("modera.browser.open", {
             url: claimed.openRequest.url,
+            separatePanel: true,
           });
       }
     })()
@@ -223,5 +226,9 @@ export function useBrowser(
         processing.current = false;
       });
   }, [state.openRequests, active, api, accept]);
-  return { state, execute, command };
+  return {
+    state: modeReady ? state : { ...state, multipleTabs: false },
+    execute,
+    command,
+  };
 }

@@ -2236,6 +2236,9 @@
           "inputSchema": {
             "type": "object",
             "properties": {
+              "separatePanel": {
+                "type": "boolean"
+              },
               "url": {
                 "type": "string",
                 "minLength": 1,

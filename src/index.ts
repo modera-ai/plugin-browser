@@ -33,7 +33,9 @@ export const activate: PluginModule["activate"] = async (host) => {
           if (name === "open" || name === "new-tab") {
             if (!host.panels) throw new Error("Panel navigation unavailable");
             const url = name === "open" ? normalizeBrowserUrl(input.url) : "";
-            if (host.webPages) {
+            // A single-page link hands navigation to the destination panel.
+            // The source command is cancelled when that panel takes focus.
+            if (host.webPages && input.separatePanel !== true) {
               await host.webPages.execute(
                 {
                   type: "create",
