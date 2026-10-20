@@ -1,3 +1,5 @@
+// @ts-expect-error Shared capsule styles are embedded into the panel ShadowRoot.
+import capsuleCss from "@pal/ui/capsule-toolbar.css";
 import React from "react";
 import BrowserPanel from "./browser/browser-panel";
 import type { BrowserProps } from "./browser/types";
@@ -20,7 +22,9 @@ export default function BrowserHostPanel(props: BrowserProps) {
     : "";
   return (
     <>
-      <style>{uiCss + menuCss + css + extensionCss + variables}</style>
+      <style>
+        {uiCss + menuCss + css + extensionCss + capsuleCss + variables}
+      </style>
       <UiProvider
         density="compact"
         portalContainer={props.overlayRoot}

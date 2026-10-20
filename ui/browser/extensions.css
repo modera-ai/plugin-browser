@@ -4,7 +4,6 @@
   gap: 4px;
   flex-shrink: 0;
 }
-.browser-extensions-toolbar .browser-extension-toolbar-button,
 .browser-extension-manager .browser-extension-toolbar-button {
   width: 28px;
   min-width: 28px;

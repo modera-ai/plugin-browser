@@ -120,24 +120,6 @@
   border-bottom: 1px solid var(--mu-line);
   background: var(--mu-page);
 }
-.browser-toolbar-group {
-  display: flex;
-  flex: none;
-  align-items: center;
-  gap: 2px;
-  height: 30px;
-  padding: 1px 5px;
-  border: 1px solid var(--mu-line);
-  border-radius: 999px;
-  background: var(--mu-page);
-  box-shadow: none;
-}
-.browser-toolbar button {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  transition: background-color 120ms ease;
-}
 .browser-toolbar button svg {
   display: block;
   width: 16px;
@@ -225,10 +207,6 @@
   .browser-toolbar {
     gap: 4px;
     padding-inline: 6px;
-  }
-  .browser-toolbar-group {
-    gap: 0;
-    padding-inline: 2px;
   }
   .browser-address > svg {
     display: none;
@@ -696,7 +674,3 @@
   position: relative;
 }
 
-.browser-toolbar .browser-annotate-toggle[aria-pressed="true"] {
-  color: #0069fb;
-  background: color-mix(in srgb, #339cff 14%, transparent);
-}

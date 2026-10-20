@@ -20,7 +20,7 @@ import {
   X,
   Folder,
 } from "@pal/ui/icons";
-import { Button, Input, Tooltip } from "@pal/ui";
+import { Input, Tooltip, CapsuleGroup, CapsuleButton } from "@pal/ui";
 import { CameraIcon as Camera } from "@phosphor-icons/react/dist/csr/Camera";
 import { CaretDoubleRightIcon as ChevronsRight } from "@phosphor-icons/react/dist/csr/CaretDoubleRight";
 import type { PanelMenuRequest, WebPreviewCommand } from "@pal/contracts";
@@ -807,14 +807,14 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     disabled = false,
   ) => (
     <Tooltip content={label} side="top">
-      <button
+      <CapsuleButton
         type="button"
         aria-label={label}
         disabled={disabled}
         onClick={onClick}
       >
         <Icon size={16} />
-      </button>
+      </CapsuleButton>
     </Tooltip>
   );
   const pageError = state.error && state.error !== "popup-blocked";
@@ -858,7 +858,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           navigateAddress(address);
         }}
       >
-        <div className="browser-toolbar-group browser-navigation">
+        <CapsuleGroup className="browser-toolbar-group browser-navigation">
           {button(
             text.back,
             ArrowLeft,
@@ -873,7 +873,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           )}
           <span className="browser-toolbar-divider" aria-hidden="true" />
           <Tooltip content={state.loading ? text.stop : text.reload} side="top">
-            <button
+            <CapsuleButton
               type="button"
               className={"browser-reload" + (state.loading ? " loading" : "")}
               aria-label={state.loading ? text.stop : text.reload}
@@ -883,9 +883,9 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
             >
               <RefreshCw className="browser-reload-icon" size={18} />
               {state.loading && <X className="browser-stop-icon" size={18} />}
-            </button>
+            </CapsuleButton>
           </Tooltip>
-        </div>
+        </CapsuleGroup>
         <Tooltip
           content={
             state.annotations?.selecting
@@ -894,11 +894,9 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           }
           side="top"
         >
-          <Button
+          <CapsuleButton
             type="button"
             className="browser-annotate-toggle"
-            variant="ghost"
-            size="icon"
             aria-label={text.annotate}
             aria-pressed={!!state.annotations?.selecting}
             disabled={!/^https?:/.test(state.url)}
@@ -911,7 +909,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
             }
           >
             <MousePointer2 size={16} />
-          </Button>
+          </CapsuleButton>
         </Tooltip>
         <div className="browser-address">
           <Globe size={16} />
@@ -944,7 +942,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
             </button>
           </Tooltip>
         </div>
-        <div className="browser-toolbar-group browser-actions">
+        <CapsuleGroup className="browser-toolbar-group browser-actions">
           <ExtensionsMenu
             extensions={state.extensions ?? []}
             available={state.extensionsAvailable !== false}
@@ -998,7 +996,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
             content={savedBookmark ? text.bookmarkEdit : text.bookmark}
             side="top"
           >
-            <button
+            <CapsuleButton
               type="button"
               aria-label={savedBookmark ? text.bookmarkEdit : text.bookmark}
               aria-pressed={!!savedBookmark}
@@ -1007,10 +1005,10 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
               onClick={() => void editBookmark().catch(fail)}
             >
               <Star size={18} weight={savedBookmark ? "fill" : "regular"} />
-            </button>
+            </CapsuleButton>
           </Tooltip>
           <Tooltip content={text.menu} side="top">
-            <button
+            <CapsuleButton
               type="button"
               aria-label={text.menu}
               onClick={(event) => {
@@ -1018,9 +1016,9 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
               }}
             >
               <MoreHorizontal size={18} />
-            </button>
+            </CapsuleButton>
           </Tooltip>
-        </div>
+        </CapsuleGroup>
       </form>
       {!!tree.length && (
         <nav
