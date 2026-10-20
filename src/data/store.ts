@@ -68,7 +68,7 @@ export class BrowserStore {
     }
   }
   async history(): Promise<
-    { id: string; url: string; title: string; visitedAt: number }[]
+    { id: string; url: string; title: string; visitedAt: number; favicon?: string }[]
   > {
     try {
       return JSON.parse(
@@ -79,7 +79,7 @@ export class BrowserStore {
       throw e;
     }
   }
-  recordVisit(url: string, title: string) {
+  recordVisit(url: string, title: string, icon?: string) {
     return this.change(async () => {
       const parsed = new URL(url);
       if (
@@ -88,13 +88,15 @@ export class BrowserStore {
         parsed.password
       )
         return;
+      const favicon = faviconUrl(icon);
       const list = await this.history();
       const last = list[0];
       if (last?.url === url && Date.now() - last.visitedAt < 60000) {
         last.title = title;
+        if (favicon) last.favicon = favicon;
         last.visitedAt = Date.now();
       } else
-        list.unshift({ id: randomUUID(), url, title, visitedAt: Date.now() });
+        list.unshift({ id: randomUUID(), url, title, visitedAt: Date.now(), ...(favicon ? { favicon } : {}) });
       await this.write("history.json", JSON.stringify(list.slice(0, 5000)));
     });
   }

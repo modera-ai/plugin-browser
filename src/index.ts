@@ -59,6 +59,7 @@ export const activate: PluginModule["activate"] = async (host) => {
             await data.store.recordVisit(
               normalizeBrowserUrl(input.url),
               input.title || input.url,
+              faviconUrl(input.favicon),
             );
             return;
           }

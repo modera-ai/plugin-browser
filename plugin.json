@@ -2283,6 +2283,10 @@
               "title": {
                 "type": "string",
                 "maxLength": 4000
+              },
+              "favicon": {
+                "type": "string",
+                "maxLength": 32768
               }
             },
             "required": [

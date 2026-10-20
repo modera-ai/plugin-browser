@@ -36,6 +36,7 @@ import { MousePointer2, Puzzle } from "lucide-react";
 import { messages } from "./messages";
 import { useBrowser } from "./use-browser";
 import { BrowserErrorPage } from "./error-page";
+import { SiteIcon as TabIcon } from "./site-icon";
 import { addressTarget, useAddressSuggestions } from "./use-address-suggestions";
 import { BookmarkEditor } from "./bookmark-editor";
 import { useBookmarkOverflow } from "./use-bookmark-overflow";
@@ -48,21 +49,6 @@ import { DeviceToolbar, deviceDefaults, type Device } from "./device-toolbar";
 type MenuItem = PanelMenuRequest["items"][number];
 const preference = "pal.browser.multiple-tabs";
 
-function TabIcon({ src }: { src?: string }) {
-  const [failed, setFailed] = useState(false);
-  useEffect(() => setFailed(false), [src]);
-  return src && !failed ? (
-    <img
-      className="browser-favicon"
-      src={src}
-      alt=""
-      referrerPolicy="no-referrer"
-      onError={() => setFailed(true)}
-    />
-  ) : (
-    <Globe size={16} />
-  );
-}
 function bookmarkIcon(
   node: BookmarkNode,
   tabs: { url: string; favicon?: string }[] = [],
@@ -178,7 +164,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     return () => window.removeEventListener("keydown", key);
   }, [active, api, snapshot.theme?.mode, command]);
   const [bookmarks, setBookmarks] = useState(initial?.bookmarks ?? []);
-  const addressSuggestions = useAddressSuggestions(invokeData, bookmarks, text.addressSearch);
+  const addressSuggestions = useAddressSuggestions(invokeData, bookmarks, text.addressSearch, state.tabs);
   const addressInput = useRef<HTMLInputElement>(null);
   const navigateAddress = (value: string) => {
     if (!value.trim()) return;
@@ -333,20 +319,22 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
   useEffect(() => {
     if (!addressFocused.current) setAddress(state.url);
   }, [state.url, state.activeTab]);
+  const visitFavicon = state.tabs?.find((tab) => tab.id === state.activeTab)?.favicon;
   const lastVisit = useRef("");
   useEffect(() => {
     if (!active || state.loading || state.error || !/^https?:/.test(state.url))
       return;
-    const key = state.url + state.title;
+    const key = JSON.stringify([state.url, state.title, visitFavicon]);
     if (key === lastVisit.current) return;
     lastVisit.current = key;
     void api.commands
       .execute("modera.browser.visit", {
         url: state.url,
         title: state.title || state.url,
+        ...(visitFavicon ? { favicon: visitFavicon } : {}),
       })
       .catch(() => {});
-  }, [state.url, state.title, state.loading, state.error, active, api]);
+  }, [state.url, state.title, state.loading, state.error, visitFavicon, active, api]);
   const popup = useCallback(
     async (
       items: MenuItem[],

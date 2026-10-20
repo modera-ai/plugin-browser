@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Globe, Search, Star } from "@pal/ui/icons";
 import type { InputSuggestion } from "@pal/ui";
+import { SiteIcon, siteIconUrl } from "./site-icon";
 import type { Bookmark } from "./types";
 import type { BrowserDataCall } from "../../src/browser-import-dialog";
 
-type HistoryEntry = { url: string; title: string };
+type HistoryEntry = { url: string; title: string; favicon?: string };
 export function addressTarget(value: string): string {
   const query = value.trim();
   if (/^https?:\/\//i.test(query)) return query;
@@ -15,7 +16,7 @@ export function addressTarget(value: string): string {
   return `https://www.bing.com/search?q=${encodeURIComponent(query)}`;
 }
 const displayUrl = (url: string) => url.replace(/^https?:\/\//i, "").replace(/\/$/, "");
-export function useAddressSuggestions(invoke: BrowserDataCall, bookmarks: Bookmark[], searchLabel: string) {
+export function useAddressSuggestions(invoke: BrowserDataCall, bookmarks: Bookmark[], searchLabel: string, tabs: { url: string; favicon?: string }[] = []) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [history, setHistory] = useState<HistoryEntry[]>([]);
@@ -37,19 +38,20 @@ export function useAddressSuggestions(invoke: BrowserDataCall, bookmarks: Bookma
     for (const row of [...history, ...bookmarks]) {
       if (!/^https?:\/\//i.test(row.url) || seen.has(row.url) || (needle && !`${row.title} ${row.url}`.toLocaleLowerCase().includes(needle))) continue;
       seen.add(row.url);
-      const bookmark = bookmarks.some((item) => item.url === row.url);
+      const bookmark = bookmarks.find((item) => item.url === row.url);
+      const tab = tabs.find((item) => item.url === row.url);
       result.push({ value: row.url, label: row.title || displayUrl(row.url), description: displayUrl(row.url),
-        completion: displayUrl(row.url), icon: bookmark ? <Star size={14} /> : <Globe size={14} /> });
+        completion: displayUrl(row.url), icon: <SiteIcon size={14} src={siteIconUrl(row.url, row.favicon, bookmark?.favicon, tab?.favicon)} fallback={bookmark ? <Star size={14} /> : <Globe size={14} />} /> });
       if (result.length === 7) break;
     }
     if (needle) {
       const target = addressTarget(query);
       const search = target.startsWith("https://www.bing.com/search?q=");
       const entry = { value: target, label: search ? `${query} — ${searchLabel}` : displayUrl(target),
-        description: search ? "Bing" : target, icon: search ? <Search size={14} /> : <Globe size={14} /> };
+        description: search ? "Bing" : target, icon: search ? <Search size={14} /> : <SiteIcon size={14} src={siteIconUrl(target)} /> };
       if (!seen.has(target)) result.push(entry);
     }
     return result;
-  }, [history, bookmarks, query, searchLabel]);
+  }, [history, bookmarks, query, searchLabel, tabs]);
   return { suggestions, setQuery, setOpen };
 }
