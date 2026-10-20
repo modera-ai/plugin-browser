@@ -34,6 +34,7 @@ import { AnnotationEditor } from "./annotation-editor";
 import { ExtensionsMenu } from "./extensions-menu";
 import { ExtensionManager } from "./extension-manager";
 import { MousePointer2 } from "lucide-react";
+import { useStoreConfirmation } from "./use-store-confirmation";
 import { messages } from "./messages";
 import { useBrowser } from "./use-browser";
 import { BrowserErrorPage } from "./error-page";
@@ -84,6 +85,12 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
   );
   const root = useRef<HTMLDivElement>(null),
     viewport = useRef<HTMLDivElement>(null);
+  useStoreConfirmation(
+    api,
+    state.extensionStorePrompt,
+    snapshot.locale,
+    execute,
+  );
   const [extensionsOpen, setExtensionsOpen] = useState(false);
   useEffect(() => {
     if (state.annotations?.focus) setExtensionsOpen(false);
