@@ -175,7 +175,7 @@
   color: var(--mu-muted);
 }
 .browser-address:hover {
-  background: var(--mu-soft);
+  background: color-mix(in srgb, var(--mu-ink) 7%, var(--mu-page));
 }
 .browser-address input {
   text-align: center;
@@ -560,17 +560,20 @@
   font-size: 12px;
 }
 
-.browser-address > .mu-input-suggestion-anchor {
+.browser-address > .mu-input-suggestion-anchor,
+.browser-address > .browser-address-input {
   flex: 1;
   min-width: 0;
+  height: 100%;
 }
 .browser-address-input.mu-field {
   gap: 0;
   min-width: 0;
+  height: 100%;
 }
 .browser-address-input .mu-input-shell {
   min-height: 0;
-  height: auto;
+  height: 100%;
   padding: 0;
   border: 0;
   border-radius: 0;
@@ -579,6 +582,15 @@
 }
 .browser-address-input .mu-input-shell:focus-within {
   border: 0;
+  box-shadow: none;
+}
+.browser-address .browser-address-input .mu-input {
+  min-height: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   box-shadow: none;
 }
 
