@@ -1,2 +1,42 @@
-.browser-settings-ui { min-height: 100dvh; }
-.browser-import-options { display: grid; gap: 14px; margin-top: 14px; }
+.browser-settings-ui {
+  min-height: 100dvh;
+  background: var(--mu-page);
+  color: var(--mu-ink);
+  font-family: var(--mu-font);
+}
+.browser-import-options {
+  display: grid;
+  gap: 14px;
+  margin-top: 14px;
+}
+.browser-manager-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.browser-manager-truncate {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--mu-muted);
+}
+.browser-manager-secret {
+  font-family: monospace;
+  overflow-wrap: anywhere;
+}
+.browser-manager-folders {
+  height: min(280px, 40dvh);
+  min-height: 80px;
+  overflow: auto;
+}
+.browser-manager-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  margin-top: 16px;
+}
+.browser-folder-menu.mu-menu-popover {
+  min-width: 148px;
+  width: 148px;
+}

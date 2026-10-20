@@ -97,7 +97,7 @@ export function ExtensionsDialog({
                   label={text.extensionStore}
                   value={store}
                   disabled={busy}
-                  onChange={(event) => setStore(event.target.value)}
+                  onChange={setStore}
                 />
                 <Button
                   type="submit"

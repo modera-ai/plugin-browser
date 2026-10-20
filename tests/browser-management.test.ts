@@ -70,6 +70,14 @@ it("preserves nested bookmark paths, restores flattened imports and edits group 
     value: JSON.stringify({ folder: "Personal" }),
   })) as any;
   expect(page.bookmarks[0].title).toBe("Renamed");
+  expect(page.filteredBookmarkCount).toBe(1);
+  const missing = (await data.act({
+    id: "dataSummary",
+    value: JSON.stringify({ query: "no-match" }),
+  })) as any;
+  expect(missing.filteredBookmarkCount).toBe(0);
+  expect(missing.bookmarkCount).toBe(1);
+  expect(missing.bookmarks).toEqual([]);
   await expect(
     data.act({
       id: "saveBookmark",
@@ -109,6 +117,18 @@ it("paginates and removes visits and imports cookie exports without returning se
   expect(await data.act({ id: "history", value: '{"page":1}' })).toHaveLength(
     3,
   );
+  const paginated = (await data.act({
+    id: "history",
+    value: '{"page":1,"includePagination":true}',
+  })) as any;
+  expect(paginated.total).toBe(103);
+  expect(paginated.items).toHaveLength(3);
+  const filtered = (await data.act({
+    id: "history",
+    value: '{"query":"Page 102","includePagination":true}',
+  })) as any;
+  expect(filtered.total).toBe(1);
+  expect(filtered.items[0].title).toBe("Page 102");
   await data.act({ id: "removeHistory", value: '{"all":true}' });
   expect(await data.store.history()).toEqual([]);
   const path = join(root, "cookies.json");

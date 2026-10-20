@@ -14,7 +14,7 @@ import { GlobeIcon as Globe } from "@phosphor-icons/react/dist/csr/Globe";
 import { frontend } from "@pal/plugin-sdk/react";
 import { useBrowserSettings } from "./use-browser-settings";
 import { BrowserManager, type ManagerKind } from "./manager-page";
-import { type Summary } from "./settings-management";
+import type { Summary } from "./browser-data-types";
 
 export function BrowserSettings() {
   const s = useBrowserSettings();
@@ -78,7 +78,7 @@ export function BrowserSettings() {
   }, []);
   useEffect(() => {
     if (s.config && !route) void s.run(refresh);
-  }, [!!s.config]);
+  }, [!!s.config, route]);
   useEffect(() => {
     if (s.config && route === "import") {
       setNavigation({ entries: [""], index: 0 });
@@ -95,6 +95,7 @@ export function BrowserSettings() {
     <UiProvider
       theme={s.snapshot?.theme?.mode ?? "system"}
       locale={s.zh ? "zh-CN" : "en"}
+      density="compact"
       className="browser-settings-ui mu-settings-codex"
     >
       {managerRoute && (
@@ -105,7 +106,6 @@ export function BrowserSettings() {
               label: t("浏览器", "Browser"),
               onSelect: () => {
                 setRoute("");
-                void s.run(refresh);
               },
             },
             ...(managerRoute
@@ -116,7 +116,7 @@ export function BrowserSettings() {
                         bookmarks: t("书签管理器", "Bookmarks"),
                         passwords: t("密码管理器", "Passwords"),
                         history: t("浏览历史", "History"),
-                        cookies: t("Cookie 导入", "Import cookies"),
+                        cookies: t("导入 Cookie", "Import cookies"),
                       } as Record<string, string>
                     )[route]!,
                   },
@@ -270,7 +270,7 @@ export function BrowserSettings() {
                 )}
               >
                 <Button variant="outline" onClick={() => setRoute("cookies")}>
-                  {t("管理", "Manage")}
+                  {t("导入", "Import")}
                 </Button>
               </FormItem>
             </Form>

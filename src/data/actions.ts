@@ -106,16 +106,18 @@ export class BrowserDataActions {
       return { ok: true };
     }
     if (action.id === "history") {
-      return (await this.store.history())
-        .filter((x) =>
-          (x.title + " " + x.url)
-            .toLowerCase()
-            .includes(String(value.query ?? "").toLowerCase()),
-        )
-        .slice(
-          Math.max(0, Number(value.page) || 0) * 100,
-          Math.max(0, Number(value.page) || 0) * 100 + 100,
-        );
+      const matching = (await this.store.history()).filter((x) =>
+        (x.title + " " + x.url)
+          .toLowerCase()
+          .includes(String(value.query ?? "").toLowerCase()),
+      );
+      const items = matching.slice(
+        Math.max(0, Number(value.page) || 0) * 100,
+        Math.max(0, Number(value.page) || 0) * 100 + 100,
+      );
+      return value.includePagination === true
+        ? { items, total: matching.length }
+        : items;
     }
     if (action.id === "removeHistory") {
       await this.store.removeHistory(
@@ -186,6 +188,18 @@ export class BrowserDataActions {
         bookmarks = await this.store.bookmarks();
       const query = String(value.query ?? "").toLowerCase();
       const page = Math.max(0, Number(value.page) || 0);
+      const matchingPasswords = passwords.filter((p) =>
+        (p.origin + " " + p.username).toLowerCase().includes(query),
+      );
+      const matchingBookmarks = bookmarks.filter(
+        (b) =>
+          (value.folder === undefined ||
+            (b.folder ?? "") === value.folder ||
+            (value.folder && b.folder?.startsWith(value.folder + "/"))) &&
+          (b.title + " " + b.url + " " + (b.folder ?? ""))
+            .toLowerCase()
+            .includes(query),
+      );
       return {
         folders: [
           ...new Set(
@@ -198,25 +212,12 @@ export class BrowserDataActions {
         passwordCount: passwords.length,
         bookmarkCount: bookmarks.length,
         cookieCount: (await this.host.localData?.cookies())?.length ?? 0,
-        passwords: passwords
-          .filter((p) =>
-            (p.origin + " " + p.username).toLowerCase().includes(query),
-          )
+        filteredPasswordCount: matchingPasswords.length,
+        filteredBookmarkCount: matchingBookmarks.length,
+        passwords: matchingPasswords
           .slice(page * 50, page * 50 + 50)
           .map(({ password, ...p }) => p),
-        bookmarks: bookmarks
-          .filter(
-            (b) =>
-              value.folder === undefined ||
-              (b.folder ?? "") === value.folder ||
-              (value.folder && b.folder?.startsWith(value.folder + "/")),
-          )
-          .filter((b) =>
-            (b.title + " " + b.url + " " + (b.folder ?? ""))
-              .toLowerCase()
-              .includes(query),
-          )
-          .slice(page * 50, page * 50 + 50),
+        bookmarks: matchingBookmarks.slice(page * 50, page * 50 + 50),
       };
     }
     if (action.id === "revealPassword")
