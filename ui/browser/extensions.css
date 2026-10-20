@@ -1,0 +1,330 @@
+.browser-extensions-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.browser-extensions-toolbar .browser-extension-toolbar-button,
+.browser-extension-manager .browser-extension-toolbar-button {
+  width: 28px;
+  min-width: 28px;
+  height: 28px;
+  min-height: 28px;
+  padding: 0;
+  border-radius: 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.browser-extension-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  object-fit: contain;
+}
+.browser-extensions-popover {
+  width: 240px !important;
+  min-width: 240px !important;
+  max-width: calc(100vw - 16px);
+  padding: 4px !important;
+  box-sizing: border-box;
+}
+.browser-extensions-menu-heading {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  padding: 0 8px;
+  font-size: 12px;
+  color: var(--mu-muted);
+  font-weight: 500;
+}
+.browser-extensions-menu-status {
+  font-size: 12px;
+  line-height: 18px;
+  margin: 4px 8px 8px;
+  color: var(--mu-muted);
+}
+.browser-extensions-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: min(360px, 60vh);
+  overflow: auto;
+}
+.browser-extensions-menu-row {
+  display: flex;
+  align-items: center;
+  height: 28px;
+  min-height: 28px;
+  border-radius: 4px;
+  gap: 0;
+}
+.browser-extensions-menu-row:hover {
+  background: var(--mu-soft);
+}
+.browser-extensions-menu-row .browser-extension-launch {
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-start;
+  gap: 8px;
+  text-align: left;
+  height: 28px;
+  min-height: 28px;
+  padding: 0 8px;
+  font-size: 12px;
+  box-shadow: none;
+}
+.browser-extension-launch span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.browser-extensions-menu-row .browser-extension-pin {
+  width: 26px;
+  min-width: 26px;
+  height: 26px;
+  min-height: 26px;
+  padding: 0;
+  box-shadow: none;
+}
+.browser-extension-pin[aria-pressed="false"] {
+  opacity: 0.55;
+}
+.browser-extension-more {
+  flex: 0 0 26px;
+  width: 26px;
+  height: 26px;
+}
+.browser-extension-more > .mu-menu-trigger {
+  width: 26px;
+  min-width: 26px;
+  height: 26px;
+  min-height: 26px;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: transparent;
+}
+.browser-extension-more > .mu-menu-trigger svg {
+  width: 14px;
+  height: 14px;
+  transform: rotate(90deg);
+}
+.browser-extensions-menu-footer {
+  border-top: 1px solid var(--mu-line);
+  margin: 6px 4px 0;
+  padding-top: 4px;
+  display: flex;
+  flex-direction: column;
+}
+.browser-extensions-menu-footer > .mu-button {
+  width: 100%;
+  min-height: 28px;
+  height: 28px;
+  justify-content: space-between;
+  padding: 0 4px;
+  font-size: 12px;
+  box-shadow: none;
+}
+.browser-extension-manager {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: var(--mu-page);
+  color: var(--mu-ink);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.browser-extension-manager-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 48px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--mu-line);
+}
+.browser-extension-manager-header h2 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+  white-space: nowrap;
+}
+.browser-extension-search {
+  margin-left: auto;
+  max-width: 360px;
+  min-width: 100px;
+  flex: 1;
+}
+.browser-extension-search > label,
+.browser-extension-manager-store > div > label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+.browser-extension-manager-scroll {
+  padding: 16px;
+  overflow: auto;
+  min-height: 0;
+  flex: 1;
+}
+.browser-extension-manager-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.browser-extension-manager-store {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 20px;
+  max-width: 640px;
+}
+.browser-extension-manager-store > div {
+  flex: 1;
+  min-width: 0;
+}
+.browser-extension-manager-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 12px;
+}
+.browser-extension-card,
+.browser-extension-detail {
+  min-width: 0;
+  border: 1px solid var(--mu-line);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.browser-extension-card-heading {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.browser-extension-card-heading > .browser-extension-icon {
+  width: 28px;
+  height: 28px;
+  flex-basis: 28px;
+}
+.browser-extension-card-heading h3 {
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 600;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  margin: 0;
+  flex: 1;
+}
+.browser-extension-card-heading small {
+  display: block;
+  font-weight: 400;
+  font-size: 11px;
+  opacity: 0.6;
+  margin-top: 2px;
+}
+.browser-extension-card-description {
+  font-size: 12px;
+  line-height: 18px;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  opacity: 0.75;
+  flex: 1;
+}
+.browser-extension-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+}
+.browser-extension-card-actions > .mu-switch,
+.browser-extension-card-actions > [role="switch"] {
+  margin-left: auto;
+}
+.browser-extension-manager-notice {
+  font-size: 12px;
+  line-height: 18px;
+  opacity: 0.7;
+  margin: 0 0 12px;
+}
+.browser-extension-manager-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 180px;
+  gap: 8px;
+  opacity: 0.65;
+  font-size: 13px;
+}
+.browser-extension-detail {
+  max-width: 680px;
+  margin: auto;
+  font-size: 12px;
+  line-height: 18px;
+}
+.browser-extension-detail-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.browser-extension-detail h4,
+.browser-extension-detail p {
+  margin: 0;
+}
+.browser-panel .browser-extension-manager .mu-button {
+  width: auto;
+  height: 28px;
+  min-height: 28px;
+  padding: 4px 9px;
+  border: 1px solid var(--mu-line);
+  border-radius: 5px;
+  background: var(--mu-control);
+  font-size: 12px;
+}
+.browser-panel .browser-extension-manager .mu-button-ghost {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+.browser-panel .browser-extension-manager .browser-extension-toolbar-button {
+  width: 28px;
+  min-width: 28px;
+  padding: 0;
+}
+.browser-panel .browser-extension-manager .mu-switch {
+  width: var(--mu-switch-width);
+  height: var(--mu-switch-height);
+  padding: 4px;
+  border-radius: 999px;
+  justify-content: flex-start;
+}
+.browser-panel .browser-extension-manager .mu-switch[data-state="checked"] {
+  justify-content: flex-end;
+}
+@media (prefers-reduced-motion: reduce) {
+  .browser-extensions-toolbar * {
+    transition: none !important;
+  }
+}
+
+.browser-extensions-toolbar {
+  position: relative;
+}
+.browser-extensions-menu-anchor {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  width: 240px;
+  height: 0;
+  pointer-events: none;
+}

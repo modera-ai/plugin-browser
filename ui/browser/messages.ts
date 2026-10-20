@@ -3,7 +3,8 @@ const en = {
   annotate: "Annotate page",
   annotateElement: "Select an element",
   annotateRegion: "Select an area",
-  annotationElementHint: "Click an element to annotate · Esc to cancel",
+  annotationElementHint:
+    "Click or drag to annotate · Hold Space to browse · Esc to exit",
   annotationRegionHint: "Drag to select an area · Esc to cancel",
   annotationTitle: "Add annotation",
   annotationComment: "Comment",

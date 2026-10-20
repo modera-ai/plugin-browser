@@ -31,13 +31,17 @@ import {
   type BrowserProps,
 } from "./types";
 import { AnnotationEditor } from "./annotation-editor";
-import { ExtensionsDialog } from "./extensions-dialog";
-import { MousePointer2, Puzzle } from "lucide-react";
+import { ExtensionsMenu } from "./extensions-menu";
+import { ExtensionManager } from "./extension-manager";
+import { MousePointer2 } from "lucide-react";
 import { messages } from "./messages";
 import { useBrowser } from "./use-browser";
 import { BrowserErrorPage } from "./error-page";
 import { SiteIcon as TabIcon } from "./site-icon";
-import { addressTarget, useAddressSuggestions } from "./use-address-suggestions";
+import {
+  addressTarget,
+  useAddressSuggestions,
+} from "./use-address-suggestions";
 import { BookmarkEditor } from "./bookmark-editor";
 import { useBookmarkOverflow } from "./use-bookmark-overflow";
 import {
@@ -81,6 +85,9 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
   const root = useRef<HTMLDivElement>(null),
     viewport = useRef<HTMLDivElement>(null);
   const [extensionsOpen, setExtensionsOpen] = useState(false);
+  useEffect(() => {
+    if (state.annotations?.focus) setExtensionsOpen(false);
+  }, [state.annotations?.focus]);
   const [address, setAddress] = useState("");
   const addressFocused = useRef(false);
   const [deviceOpen, setDeviceOpen] = useState(() => {
@@ -164,7 +171,12 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     return () => window.removeEventListener("keydown", key);
   }, [active, api, snapshot.theme?.mode, command]);
   const [bookmarks, setBookmarks] = useState(initial?.bookmarks ?? []);
-  const addressSuggestions = useAddressSuggestions(invokeData, bookmarks, text.addressSearch, state.tabs);
+  const addressSuggestions = useAddressSuggestions(
+    invokeData,
+    bookmarks,
+    text.addressSearch,
+    state.tabs,
+  );
   const addressInput = useRef<HTMLInputElement>(null);
   const navigateAddress = (value: string) => {
     if (!value.trim()) return;
@@ -223,8 +235,8 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
   const menu = useRef(0),
     pendingMenu = useRef(false),
     seenContext = useRef("");
-  const latest = useRef({ state, active });
-  latest.current = { state, active };
+  const latest = useRef({ state, active, extensionsOpen });
+  latest.current = { state, active, extensionsOpen };
   const lastLayout = useRef("");
   const layout = useCallback(
     async (visibleOverride?: boolean) => {
@@ -248,6 +260,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
         visible:
           visibleOverride ??
           (value.active &&
+            !value.extensionsOpen &&
             !!value.state.url &&
             (!value.state.error || value.state.error === "popup-blocked") &&
             box.width > 0 &&
@@ -313,13 +326,15 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     deviceOpen,
     device,
     bookmarks.length,
-    state.annotations?.selecting,
+    extensionsOpen,
     layout,
   ]);
   useEffect(() => {
     if (!addressFocused.current) setAddress(state.url);
   }, [state.url, state.activeTab]);
-  const visitFavicon = state.tabs?.find((tab) => tab.id === state.activeTab)?.favicon;
+  const visitFavicon = state.tabs?.find(
+    (tab) => tab.id === state.activeTab,
+  )?.favicon;
   const lastVisit = useRef("");
   useEffect(() => {
     if (!active || state.loading || state.error || !/^https?:/.test(state.url))
@@ -334,7 +349,15 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
         ...(visitFavicon ? { favicon: visitFavicon } : {}),
       })
       .catch(() => {});
-  }, [state.url, state.title, state.loading, state.error, visitFavicon, active, api]);
+  }, [
+    state.url,
+    state.title,
+    state.loading,
+    state.error,
+    visitFavicon,
+    active,
+    api,
+  ]);
   const popup = useCallback(
     async (
       items: MenuItem[],
@@ -856,6 +879,33 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
             </button>
           </Tooltip>
         </div>
+        <Tooltip
+          content={
+            state.annotations?.selecting
+              ? text.annotationElementHint
+              : text.annotate
+          }
+          side="top"
+        >
+          <Button
+            type="button"
+            className="browser-annotate-toggle"
+            variant="ghost"
+            size="icon"
+            aria-label={text.annotate}
+            aria-pressed={!!state.annotations?.selecting}
+            disabled={!/^https?:/.test(state.url)}
+            onClick={() =>
+              command(
+                state.annotations?.selecting
+                  ? { type: "annotation-cancel" }
+                  : { type: "annotation-start", mode: "element" },
+              )
+            }
+          >
+            <MousePointer2 size={16} />
+          </Button>
+        </Tooltip>
         <div className="browser-address">
           <Globe size={16} />
           <Input
@@ -876,7 +926,9 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
               addressFocused.current = true;
               event.currentTarget.select();
             }}
-            onBlur={() => { addressFocused.current = false; }}
+            onBlur={() => {
+              addressFocused.current = false;
+            }}
             onChange={setAddress}
           />
           <Tooltip content={text.go} side="top">
@@ -886,39 +938,35 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           </Tooltip>
         </div>
         <div className="browser-toolbar-group browser-actions">
-          <Tooltip content={text.annotate} side="top">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label={text.annotate}
-              aria-pressed={!!state.annotations?.selecting}
-              disabled={!/^https?:/.test(state.url)}
-              onClick={() =>
-                command(
-                  state.annotations?.selecting
-                    ? { type: "annotation-cancel" }
-                    : { type: "annotation-start", mode: "element" },
-                )
-              }
-            >
-              <MousePointer2 size={16} />
-            </Button>
-          </Tooltip>
-          <Tooltip content={text.extensions} side="top">
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              aria-label={text.extensions}
-              onClick={() => {
-                setExtensionsOpen(true);
-                command({ type: "extension-list" });
-              }}
-            >
-              <Puzzle size={16} />
-            </Button>
-          </Tooltip>
+          <ExtensionsMenu
+            extensions={state.extensions ?? []}
+            available={state.extensionsAvailable !== false}
+            text={text}
+            execute={execute}
+            fail={report}
+            confirmRemove={(extension) =>
+              api.dialog.confirm({
+                title: text.extensionRemoveTitle,
+                content: extension.name,
+                confirmText: text.remove,
+                tone: "danger",
+              })
+            }
+            onManage={() => {
+              command({ type: "annotation-cancel" });
+              setExtensionsOpen(true);
+            }}
+            onVisitStore={() => {
+              setExtensionsOpen(false);
+              command({
+                type: "navigate",
+                url: "https://chromewebstore.google.com/",
+              });
+            }}
+            onOpenChange={(open) => {
+              if (open) command({ type: "extension-list" });
+            }}
+          />
           {button(
             text.screenshot,
             Camera,
@@ -1031,21 +1079,6 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           </Tooltip>
         </nav>
       )}
-      {state.annotations?.selecting && (
-        <div className="browser-annotation-status" role="status">
-          <span>
-            {state.annotations.selecting === "region"
-              ? text.annotationRegionHint
-              : text.annotationElementHint}
-          </span>
-          <Button
-            size="small"
-            onClick={() => command({ type: "annotation-cancel" })}
-          >
-            {text.cancel}
-          </Button>
-        </div>
-      )}
       {deviceOpen && (
         <DeviceToolbar
           text={text}
@@ -1070,7 +1103,32 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
         }
         ref={viewport}
       >
-        {pageError && (
+        {extensionsOpen && (
+          <ExtensionManager
+            extensions={state.extensions ?? []}
+            available={state.extensionsAvailable !== false}
+            text={text}
+            execute={execute}
+            fail={report}
+            confirmRemove={(extension) =>
+              api.dialog.confirm({
+                title: text.extensionRemoveTitle,
+                content: extension.name,
+                confirmText: text.remove,
+                tone: "danger",
+              })
+            }
+            close={() => setExtensionsOpen(false)}
+            onVisitStore={() => {
+              setExtensionsOpen(false);
+              command({
+                type: "navigate",
+                url: "https://chromewebstore.google.com/",
+              });
+            }}
+          />
+        )}
+        {!extensionsOpen && pageError && (
           <BrowserErrorPage
             error={state.error}
             url={state.url}
@@ -1078,7 +1136,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
             retry={() => command({ type: "reload" })}
           />
         )}
-        {!pageError && !state.url && (
+        {!extensionsOpen && !pageError && !state.url && (
           <div className="browser-empty">
             <Globe size={44} />
             <h1>{text.empty}</h1>
@@ -1090,30 +1148,24 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
         <AnnotationEditor
           key={state.annotations.selection.token}
           selection={state.annotations.selection}
+          viewport={viewport.current}
           text={text}
           fail={report}
-          cancel={() => command({ type: "annotation-cancel" })}
+          cancel={() => command({ type: "annotation-dismiss" })}
+          remove={() => {
+            if (state.annotations?.selection?.commentId)
+              command({
+                type: "annotation-remove",
+                id: state.annotations.selection.commentId,
+              });
+          }}
           submit={async (comment) => {
             await execute({
               type: "annotation-submit",
               token: state.annotations!.selection!.token,
               comment,
             });
-            await api.toast.show({
-              level: "success",
-              text: text.annotationAdded,
-            });
           }}
-        />
-      )}
-      {active && extensionsOpen && (
-        <ExtensionsDialog
-          text={text}
-          extensions={state.extensions ?? []}
-          available={state.extensionsAvailable !== false}
-          execute={execute}
-          fail={report}
-          close={() => setExtensionsOpen(false)}
         />
       )}
       {dataDialog === "import" && (

@@ -5,6 +5,8 @@ import { UiProvider } from "@pal/ui";
 import { resolveLocale } from "@pal/contracts";
 // @ts-expect-error The host renderer embeds its styles in the panel ShadowRoot.
 import css from "./browser/style.css";
+// @ts-expect-error CSS is bundled as text for the host ShadowRoot.
+import extensionCss from "./browser/extensions.css";
 // @ts-expect-error Public UI styles are bundled as text in trusted host modules.
 import uiCss from "@pal/ui/styles.css";
 // @ts-expect-error Text CSS imports do not expand styles.css @import rules.
@@ -18,7 +20,7 @@ export default function BrowserHostPanel(props: BrowserProps) {
     : "";
   return (
     <>
-      <style>{uiCss + menuCss + css + variables}</style>
+      <style>{uiCss + menuCss + css + extensionCss + variables}</style>
       <UiProvider
         density="compact"
         portalContainer={props.overlayRoot}

@@ -534,117 +534,6 @@
   opacity: 0.5;
   cursor: default;
 }
-.browser-annotation-status {
-  display: flex;
-  flex: none;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 10px;
-  border-bottom: 1px solid var(--mu-line);
-  color: var(--mu-muted);
-  font-size: 12px;
-}
-.browser-annotation-status > span {
-  flex: 1;
-}
-.browser-panel .browser-annotation-status button {
-  width: auto;
-  height: 26px;
-  padding: 0 8px;
-}
-.browser-annotation-dialog,
-.browser-extensions-dialog {
-  width: min(480px, calc(100vw - 28px));
-}
-.browser-annotation-content,
-.browser-extensions-content {
-  display: grid;
-  gap: 12px;
-  min-width: 0;
-}
-.browser-annotation-preview {
-  display: block;
-  max-width: 100%;
-  max-height: 220px;
-  margin: 0 auto;
-  object-fit: contain;
-  border: 1px solid var(--mu-line);
-  border-radius: 6px;
-}
-.browser-annotation-excerpt {
-  margin: 0;
-  padding: 6px 10px;
-  border-left: 2px solid var(--mu-line);
-  color: var(--mu-muted);
-  max-height: 96px;
-  overflow: auto;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-.browser-extension-note,
-.browser-extension-empty {
-  margin: 0;
-  color: var(--mu-muted);
-  font-size: 12px;
-}
-.browser-extension-install-actions,
-.browser-extension-actions {
-  display: flex;
-  gap: 6px;
-}
-.browser-extension-store {
-  display: flex;
-  align-items: end;
-  gap: 8px;
-}
-.browser-extension-store > :first-child {
-  flex: 1;
-  min-width: 0;
-}
-.browser-extension-list {
-  display: grid;
-  gap: 10px;
-}
-.browser-extension {
-  padding: 10px;
-  border: 1px solid var(--mu-line);
-  border-radius: 8px;
-  min-width: 0;
-}
-.browser-extension-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-.browser-extension-heading > div {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.browser-extension-heading strong {
-  font-size: 13px;
-  font-weight: 500;
-}
-.browser-extension-heading small {
-  display: block;
-  color: var(--mu-muted);
-  font-size: 11px;
-  margin-top: 2px;
-}
-.browser-extension p {
-  margin: 7px 0;
-  font-size: 12px;
-  overflow-wrap: anywhere;
-}
-.browser-extension details {
-  font-size: 12px;
-  margin: 8px 0;
-  color: var(--mu-muted);
-}
-.browser-extension summary {
-  cursor: pointer;
-}
-
 .browser-error-page {
   position: absolute;
   inset: 0;
@@ -661,14 +550,153 @@
   line-height: 1.65;
   overflow-wrap: anywhere;
 }
-.browser-error-icon { color: var(--mu-accent); margin-bottom: 20px; }
-.browser-error-content h1 { margin: 0 0 12px; font-size: 22px; font-weight: 500; line-height: 1.4; }
-.browser-error-content p { margin: 0 0 24px; color: var(--mu-muted); }
-.browser-error-content ul { margin: 0 0 24px; padding-left: 22px; color: var(--mu-muted); }
-.browser-error-content .browser-error-try { margin-bottom: 0; }
-.browser-error-code { display: block; margin-bottom: 32px; color: var(--mu-muted); font-size: 12px; }
+.browser-error-icon {
+  color: var(--mu-accent);
+  margin-bottom: 20px;
+}
+.browser-error-content h1 {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.browser-error-content p {
+  margin: 0 0 24px;
+  color: var(--mu-muted);
+}
+.browser-error-content ul {
+  margin: 0 0 24px;
+  padding-left: 22px;
+  color: var(--mu-muted);
+}
+.browser-error-content .browser-error-try {
+  margin-bottom: 0;
+}
+.browser-error-code {
+  display: block;
+  margin-bottom: 32px;
+  color: var(--mu-muted);
+  font-size: 12px;
+}
 
-.browser-address > .mu-input-suggestion-anchor { flex: 1; min-width: 0; }
-.browser-address-input.mu-field { gap: 0; min-width: 0; }
-.browser-address-input .mu-input-shell { min-height: 0; height: auto; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
-.browser-address-input .mu-input-shell:focus-within { border: 0; box-shadow: none; }
+.browser-address > .mu-input-suggestion-anchor {
+  flex: 1;
+  min-width: 0;
+}
+.browser-address-input.mu-field {
+  gap: 0;
+  min-width: 0;
+}
+.browser-address-input .mu-input-shell {
+  min-height: 0;
+  height: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.browser-address-input .mu-input-shell:focus-within {
+  border: 0;
+  box-shadow: none;
+}
+
+.browser-annotation-anchor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+.browser-comment-editor.mu-popover-morph {
+  width: 294px;
+  min-width: 0;
+  max-width: calc(100vw - 16px);
+  padding: 8px;
+  border-radius: 22px;
+  background: var(--mu-card);
+  color: var(--mu-ink);
+  border: 1px solid var(--mu-line);
+  box-shadow: 0 5px 18px #0002;
+  overflow: visible;
+}
+.browser-comment-input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+.browser-comment-input-row > .mu-field {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+}
+.browser-comment-input-row textarea.mu-textarea {
+  min-height: 24px;
+  height: 24px;
+  max-height: 160px;
+  line-height: 24px;
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+  resize: none;
+  font: inherit;
+  line-height: 24px;
+  color: var(--mu-ink);
+}
+.browser-comment-input-row .mu-button {
+  height: 28px;
+  min-height: 28px;
+  width: 28px;
+  min-width: 28px;
+  padding: 0;
+  border-radius: 50%;
+  flex: none;
+}
+.browser-comment-submit.mu-button {
+  background: var(--mu-ink);
+  color: var(--mu-card);
+}
+.browser-comment-submit.mu-button:disabled {
+  opacity: 0.25;
+}
+.browser-comment-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 6px 2px 0;
+}
+.browser-comment-target {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  margin: 0 4px 6px;
+  font-size: 11px;
+  color: var(--mu-muted);
+}
+.browser-comment-target img {
+  width: 28px;
+  height: 20px;
+  object-fit: cover;
+  border-radius: 3px;
+}
+.browser-comment-target code {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.browser-comment-armed {
+  outline: 1px solid var(--mu-accent);
+}
+.browser-viewport {
+  position: relative;
+}
+
+.browser-toolbar .browser-annotate-toggle[aria-pressed="true"] {
+  color: #0069fb;
+  background: color-mix(in srgb, #339cff 14%, transparent);
+}
