@@ -7,6 +7,7 @@ import type {
   WebPageInfo,
 } from "@pal/plugin-sdk";
 import { definitions } from "./definitions";
+import { startPageUrl } from "./start-page";
 import {
   pointScript,
   snapshotScript,
@@ -51,7 +52,7 @@ export function browserTools(host: PluginContext): ToolContribution[] {
       if (name === "create") {
         const url =
           input.url ??
-          String(
+          startPageUrl(
             (await host.config?.read(context.projectId))?.values.startPage ??
               "",
           );

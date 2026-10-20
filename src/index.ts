@@ -5,6 +5,7 @@ import { definePlugin, type PluginModule } from "@pal/plugin-sdk";
 import manifest from "../plugin.json";
 import { browserTools } from "./tools";
 import { BrowserDataActions } from "./data/actions";
+import { startPageUrl } from "./start-page";
 export const activate: PluginModule["activate"] = async (host) => {
   const data = new BrowserDataActions(host);
   const tools = browserTools(host);
@@ -148,7 +149,7 @@ export const activate: PluginModule["activate"] = async (host) => {
           initial ||
           (managed
             ? ""
-            : String(
+            : startPageUrl(
                 (await host.config?.read(context.projectId))?.values
                   .startPage ?? "",
               ));
