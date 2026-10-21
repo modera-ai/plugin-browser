@@ -3,7 +3,7 @@ export function browserData<T = unknown>(
   operation: string,
   value: unknown = {},
 ): Promise<T> {
-  return settingsAction<T>("modera.browser.data", {
+  return settingsAction<T>("pal.browser.data", {
     operation,
     value,
   });

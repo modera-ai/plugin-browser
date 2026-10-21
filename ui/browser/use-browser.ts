@@ -215,7 +215,7 @@ export function useBrowser(
         });
         accept(claimed);
         if (claimed.openRequest)
-          await api.commands.execute("modera.browser.open", {
+          await api.commands.execute("pal.browser.open", {
             url: claimed.openRequest.url,
             separatePanel: true,
           });

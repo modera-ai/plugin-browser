@@ -20,7 +20,7 @@ export const activate: PluginModule["activate"] = async (host) => {
           const input = raw as Record<string, any>;
           const context = execution.context;
           context.signal.throwIfAborted();
-          const name = declaration.id.slice("modera.browser.".length);
+          const name = declaration.id.slice("pal.browser.".length);
           if (name.startsWith("tool.")) {
             const tool = tools.find(
               (tool) =>
@@ -39,7 +39,7 @@ export const activate: PluginModule["activate"] = async (host) => {
               await host.webPages.execute(
                 {
                   type: "create",
-                  panel: "modera.browser.preview",
+                  panel: "pal.browser.preview",
                   resource: JSON.stringify({
                     key: crypto.randomUUID(),
                     url,
@@ -52,7 +52,7 @@ export const activate: PluginModule["activate"] = async (host) => {
               return { opened: true };
             }
             await host.panels.open(
-              "modera.browser.preview",
+              "pal.browser.preview",
               JSON.stringify({ key: crypto.randomUUID(), url }),
               context,
             );
@@ -108,8 +108,8 @@ export const activate: PluginModule["activate"] = async (host) => {
         },
       });
     pal.ui.register({
-      id: "modera.browser.preview",
-      slot: "ui.panel",
+      id: "pal.browser.preview",
+      slot: "pal.ui.panel",
       persistentSession: true,
       launcher: {
         multiple: true,
@@ -122,20 +122,20 @@ export const activate: PluginModule["activate"] = async (host) => {
       restoreVersion: 1,
       nativeCapabilities: ["web-preview"],
       requiredPermissions: [
-        "network.fetch",
-        "browser.control",
-        "workspace.read",
-        "storage.read",
-        "storage.write",
-        "process.spawn",
+        "pal.network.fetch",
+        "pal.browser.control",
+        "pal.fs.read",
+        "pal.storage.read",
+        "pal.storage.write",
+        "pal.process.spawn",
       ],
       commandLimits: { maxInputChars: 4000 },
       commands: [
-        "modera.browser.open",
-        "modera.browser.new-tab",
-        "modera.browser.visit",
-        "modera.browser.bookmark",
-        "modera.browser.data",
+        "pal.browser.open",
+        "pal.browser.new-tab",
+        "pal.browser.visit",
+        "pal.browser.bookmark",
+        "pal.browser.data",
       ],
       async render(request, context) {
         let url = "";
@@ -184,7 +184,7 @@ export const activate: PluginModule["activate"] = async (host) => {
   }).activate(host);
   return {
     ...registered,
-    settings: { timeoutMs: 120000, commands: ["modera.browser.data"] },
+    settings: { timeoutMs: 120000, commands: ["pal.browser.data"] },
     tools: tools.map((tool) => ({
       ...tool,
       execute(input, context) {
@@ -192,7 +192,7 @@ export const activate: PluginModule["activate"] = async (host) => {
         return host
           .commands(context)
           .execute(
-            "modera.browser.tool." +
+            "pal.browser.tool." +
               tool.definition.id.slice(8).replaceAll("_", "-"),
             input,
           );

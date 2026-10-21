@@ -122,7 +122,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
   const [dataDialog, setDataDialog] = useState<"import" | "clear" | null>(null);
   const invokeData: BrowserDataCall = useCallback(
     (operation, value = {}) =>
-      api.commands.execute("modera.browser.data", { operation, value }),
+      api.commands.execute("pal.browser.data", { operation, value }),
     [api],
   );
   const report = useCallback(
@@ -350,7 +350,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     if (key === lastVisit.current) return;
     lastVisit.current = key;
     void api.commands
-      .execute("modera.browser.visit", {
+      .execute("pal.browser.visit", {
         url: state.url,
         title: state.title || state.url,
         ...(visitFavicon ? { favicon: visitFavicon } : {}),
@@ -714,7 +714,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     input: Bookmark & { operation?: "save" | "remove" },
   ) => {
     const result = await api.commands.execute<{ bookmarks?: Bookmark[] }>(
-      "modera.browser.bookmark",
+      "pal.browser.bookmark",
       input,
     );
     if (result.bookmarks) setBookmarks(result.bookmarks);
@@ -782,7 +782,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           if (!latest.current.active) return;
           if (entry.children) await visit(entry.children);
           else if (entry.url)
-            await api.commands.execute("modera.browser.open", {
+            await api.commands.execute("pal.browser.open", {
               url: entry.url,
             });
         }
@@ -793,7 +793,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
     const item = { ...node, url: node.url };
     if (selected === "open") command({ type: "navigate", url: node.url });
     if (selected === "new")
-      await api.commands.execute("modera.browser.open", { url: node.url });
+      await api.commands.execute("pal.browser.open", { url: node.url });
     if (selected === "edit") await editBookmark(item);
     if (selected === "remove")
       await changeBookmark({ ...item, operation: "remove" });
@@ -989,9 +989,7 @@ export default function BrowserPanel({ api, snapshot, active }: BrowserProps) {
           )}
           {state.multipleTabs === false &&
             button(text.blank, Plus, () => {
-              void api.commands
-                .execute("modera.browser.new-tab", {})
-                .catch(fail);
+              void api.commands.execute("pal.browser.new-tab", {}).catch(fail);
             })}
           <Tooltip
             content={savedBookmark ? text.bookmarkEdit : text.bookmark}

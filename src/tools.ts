@@ -58,7 +58,7 @@ export function browserTools(host: PluginContext): ToolContribution[] {
           );
         const created = (await execute({
           type: "create",
-          panel: "modera.browser.preview",
+          panel: "pal.browser.preview",
           resource: JSON.stringify({ key: randomUUID(), url, automated: true }),
         })) as WebPageInfo;
         return url
