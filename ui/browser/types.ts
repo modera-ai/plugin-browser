@@ -6,7 +6,7 @@ import type {
 } from "@pal/contracts";
 export interface BrowserApi extends Pick<
   PluginFrontendApi,
-  "commands" | "webPreview" | "toast" | "dialog" | "snapshot" | "onChanged"
+  "command" | "webPreview" | "toast" | "dialog" | "snapshot" | "onChanged"
 > {
   workspace?: PanelWorkspaceApi;
   openSettings(page?: string): Promise<void>;

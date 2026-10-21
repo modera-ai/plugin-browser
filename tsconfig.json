@@ -13,7 +13,7 @@
     ]
   },
   "include": [
-    "src",
-    "ui"
+    "src/index.ts",
+    "src/**/*.worker.ts"
   ]
 }

@@ -11,7 +11,7 @@ import {
 } from "@pal/ui/settings";
 import { DownloadIcon as Download } from "@phosphor-icons/react/dist/csr/Download";
 import { GlobeIcon as Globe } from "@phosphor-icons/react/dist/csr/Globe";
-import { frontend } from "@pal/plugin-sdk/react";
+import { pal } from "@pal/plugin-sdk";
 import { useBrowserSettings } from "./use-browser-settings";
 import { BrowserManager, type ManagerKind } from "./manager-page";
 import type { Summary } from "./browser-data-types";
@@ -72,7 +72,7 @@ export function BrowserSettings() {
     setImportOpen(true);
   };
   useEffect(() => {
-    void frontend()
+    void pal
       .ready()
       .catch(() => {});
   }, []);
@@ -286,7 +286,7 @@ export function BrowserSettings() {
               }}
               fail={(error) => {
                 console.error("Browser import failed", error);
-                void frontend().toast.show({
+                void pal.toast.show({
                   level: "error",
                   text: s.zh
                     ? "导入失败，请重试"

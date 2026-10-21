@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { frontend } from "@pal/plugin-sdk/react";
+import { pal } from "@pal/plugin-sdk";
 import {
   Button,
   Checkbox,
@@ -80,7 +80,7 @@ function ManagerContent({ kind, s }: { kind: ManagerKind; s: Settings }) {
   }>();
   const [confirm, setConfirm] = useState<"selected" | "all">();
   const notify = (text: string) =>
-    frontend().toast.show({ level: "success", text });
+    pal.toast.show({ level: "success", text });
   const run = async (task: () => Promise<void>) => {
     if (working) return;
     setWorking(true);
@@ -113,7 +113,7 @@ function ManagerContent({ kind, s }: { kind: ManagerKind; s: Settings }) {
     );
   const importFile = () =>
     void run(async () => {
-      const path = await frontend().settings.pickFile();
+      const path = await pal.settings.pickFile();
       if (!path) return;
       const result = await browserData<{ imported: number; skipped: number }>(
         kind === "cookies" ? "importCookieJson" : "importPasswordCsv",

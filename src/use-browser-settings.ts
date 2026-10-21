@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
-import { frontend, useSettings } from "@pal/plugin-sdk/react";
+import { useSettings } from "@pal/plugin-sdk/react";
+import { pal } from "@pal/plugin-sdk";
 
 /** Settings own their action channel; transient failures belong in the public toast. */
 export function useBrowserSettings() {
@@ -30,7 +31,7 @@ export function useBrowserSettings() {
             save: "Could not save settings. Please try again.",
             load: "Could not load browser settings. Please try again.",
           };
-      await frontend()
+      await pal
         .toast.show({ level: "error", text: messages[kind] })
         .catch((error) => {
           console.warn("Browser settings toast unavailable", error);
