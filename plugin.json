@@ -1133,10 +1133,10 @@
   },
   "requiresHost": {
     "plugin.providers.approval": 1,
-    "plugin.commands.dispatch": 1,
-    "plugin.commands.callable": 1,
+    "pal.commands.dispatch": 1,
+    "pal.commands.callable": 1,
     "context.commands": 1,
-    "frontend.commands.execute": 1,
+    "pal.commands.execute": 1,
     "settings.commands": 1,
     "plugin.providers": 1,
     "plugin.declarations": 1,
