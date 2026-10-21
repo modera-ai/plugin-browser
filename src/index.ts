@@ -2,7 +2,7 @@ import { bookmarkView } from "./data/bookmark-view";
 import { faviconUrl } from "./data/favicon";
 import { normalizeBrowserUrl } from "@pal/contracts";
 import { definePlugin, type PluginModule } from "@pal/plugin-sdk";
-import manifest from "../plugin.json";
+import manifest from "../pal-manifest.json";
 import { browserTools } from "./tools";
 import { BrowserDataActions } from "./data/actions";
 import { startPageUrl } from "./start-page";

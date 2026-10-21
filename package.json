@@ -2,9 +2,9 @@
   "name": "@pal-plugin/browser",
   "version": "0.1.2",
   "type": "module",
-  "description": "Isolated side-panel browsing with scoped AI browser tools.",
+  "description": "Browse pages in an isolated side panel with scoped AI browser tools.",
   "files": [
-    "plugin.json",
+    "pal-manifest.json",
     "dist",
     "LICENSE",
     "NOTICE"
@@ -12,7 +12,7 @@
   "scripts": {
     "build": "pal-plugin-build .",
     "pack": "pal-plugin pack .",
-    "release": "pal-plugin release . --publish",
+    "release": "npm publish",
     "dev": "node tools/pal-dev.mjs"
   },
   "devDependencies": {
@@ -20,10 +20,8 @@
     "@pal/plugin-build": "file:vendor/pal-plugin-build-0.1.0.tgz",
     "@pal/plugin-sdk": "file:vendor/pal-plugin-sdk-0.1.0.tgz",
     "@pal/ui": "file:vendor/pal-ui-0.1.0.tgz",
-    "@types/react-dom": "^19.1.9"
-  },
-  "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
+    "@types/react-dom": "^19.1.9",
     "lucide-react": "^1.17.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
@@ -31,5 +29,12 @@
   "publishConfig": {
     "access": "public"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "pal": {
+    "id": "pal.browser",
+    "apiVersion": 1,
+    "runtime": "node",
+    "manifest": "./pal-manifest.json"
+  },
+  "exports": "./dist/index.cjs"
 }

@@ -1,18 +1,13 @@
 {
-  "apiVersion": 1,
+  "title": "Browser",
   "workspaceTargets": [
     "local",
     "ssh"
   ],
   "activationScope": "scoped",
-  "id": "pal.browser",
-  "name": "Browser",
-  "version": "0.1.2",
-  "description": "Browse pages in an isolated side panel with scoped AI browser tools.",
   "author": "Modera",
   "category": "web",
   "icon": "compass",
-  "main": "dist/index.cjs",
   "permissions": [
     "pal.network.fetch",
     "pal.browser.control",
