@@ -13,7 +13,7 @@ export const activate: PluginModule["activate"] = async (host) => {
     for (const provider of manifest.declarations.provides.providers)
       pal.providers.register(provider);
     for (const declaration of manifest.declarations.provides.commands)
-      pal.commands.register({
+      pal.command.register({
         ...declaration,
         visibility: declaration.visibility as "public" | "private",
         async run(raw, execution) {
@@ -188,9 +188,9 @@ export const activate: PluginModule["activate"] = async (host) => {
     tools: tools.map((tool) => ({
       ...tool,
       execute(input, context) {
-        if (!host.commands) throw new Error("Host commands unavailable");
+        if (!host.command) throw new Error("Host commands unavailable");
         return host
-          .commands(context)
+          .command(context)
           .execute(
             "pal.browser.tool." +
               tool.definition.id.slice(8).replaceAll("_", "-"),

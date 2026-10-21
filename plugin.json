@@ -1,6 +1,9 @@
 {
   "apiVersion": 1,
-  "workspaceTargets": ["local", "ssh"],
+  "workspaceTargets": [
+    "local",
+    "ssh"
+  ],
   "activationScope": "scoped",
   "id": "pal.browser",
   "name": "Browser",
@@ -18,7 +21,10 @@
     "pal.storage.write",
     "pal.process.spawn"
   ],
-  "extensions": ["pal.ui.panel", "pal.ui.settings"],
+  "extensions": [
+    "pal.ui.panel",
+    "pal.ui.settings"
+  ],
   "configScope": "global",
   "config": {
     "startPage": {
@@ -93,10 +99,15 @@
             "path": "content"
           }
         ],
-        "targets": ["url"],
+        "targets": [
+          "url"
+        ],
         "tone": "blue"
       },
-      "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+      "requiredPermissions": [
+        "pal.browser.control",
+        "pal.network.fetch"
+      ],
       "title": "Create browser tab"
     },
     {
@@ -121,7 +132,9 @@
             "type": "string"
           }
         },
-        "required": ["url"],
+        "required": [
+          "url"
+        ],
         "type": "object"
       },
       "presentation": {
@@ -141,10 +154,15 @@
             "path": "content"
           }
         ],
-        "targets": ["url"],
+        "targets": [
+          "url"
+        ],
         "tone": "blue"
       },
-      "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+      "requiredPermissions": [
+        "pal.browser.control",
+        "pal.network.fetch"
+      ],
       "title": "Navigate browser"
     },
     {
@@ -159,7 +177,11 @@
         "additionalProperties": false,
         "properties": {
           "button": {
-            "enum": ["left", "right", "middle"],
+            "enum": [
+              "left",
+              "right",
+              "middle"
+            ],
             "type": "string"
           },
           "instanceId": {
@@ -203,10 +225,17 @@
             "path": "content"
           }
         ],
-        "targets": ["text", "selector", "ref"],
+        "targets": [
+          "text",
+          "selector",
+          "ref"
+        ],
         "tone": "blue"
       },
-      "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+      "requiredPermissions": [
+        "pal.browser.control",
+        "pal.network.fetch"
+      ],
       "title": "Click page"
     },
     {
@@ -249,7 +278,10 @@
         "targets": [],
         "tone": "blue"
       },
-      "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+      "requiredPermissions": [
+        "pal.browser.control",
+        "pal.network.fetch"
+      ],
       "title": "Capture browser"
     },
     {
@@ -269,7 +301,13 @@
             "type": "string"
           },
           "action": {
-            "enum": ["snapshot", "console", "ax", "cookies", "cookieDelete"],
+            "enum": [
+              "snapshot",
+              "console",
+              "ax",
+              "cookies",
+              "cookieDelete"
+            ],
             "type": "string"
           },
           "domain": {
@@ -335,10 +373,16 @@
             "path": "content"
           }
         ],
-        "targets": ["action", "domain"],
+        "targets": [
+          "action",
+          "domain"
+        ],
         "tone": "blue"
       },
-      "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+      "requiredPermissions": [
+        "pal.browser.control",
+        "pal.network.fetch"
+      ],
       "title": "Inspect browser"
     },
     {
@@ -363,7 +407,10 @@
             "type": "string"
           },
           "state": {
-            "enum": ["visible", "hidden"],
+            "enum": [
+              "visible",
+              "hidden"
+            ],
             "type": "string"
           },
           "text": {
@@ -402,10 +449,17 @@
             "path": "content"
           }
         ],
-        "targets": ["text", "selector", "state"],
+        "targets": [
+          "text",
+          "selector",
+          "state"
+        ],
         "tone": "amber"
       },
-      "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+      "requiredPermissions": [
+        "pal.browser.control",
+        "pal.network.fetch"
+      ],
       "title": "Wait for page"
     },
     {
@@ -430,7 +484,9 @@
             "type": "string"
           }
         },
-        "required": ["key"],
+        "required": [
+          "key"
+        ],
         "type": "object"
       },
       "presentation": {
@@ -450,10 +506,15 @@
             "path": "content"
           }
         ],
-        "targets": ["key"],
+        "targets": [
+          "key"
+        ],
         "tone": "blue"
       },
-      "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+      "requiredPermissions": [
+        "pal.browser.control",
+        "pal.network.fetch"
+      ],
       "title": "Press browser key"
     },
     {
@@ -508,10 +569,17 @@
             "path": "content"
           }
         ],
-        "targets": ["text", "selector", "ref"],
+        "targets": [
+          "text",
+          "selector",
+          "ref"
+        ],
         "tone": "blue"
       },
-      "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+      "requiredPermissions": [
+        "pal.browser.control",
+        "pal.network.fetch"
+      ],
       "title": "Hover page"
     },
     {
@@ -555,7 +623,9 @@
             "type": "array"
           }
         },
-        "required": ["values"],
+        "required": [
+          "values"
+        ],
         "type": "object"
       },
       "presentation": {
@@ -575,10 +645,16 @@
             "path": "content"
           }
         ],
-        "targets": ["selector", "text"],
+        "targets": [
+          "selector",
+          "text"
+        ],
         "tone": "blue"
       },
-      "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+      "requiredPermissions": [
+        "pal.browser.control",
+        "pal.network.fetch"
+      ],
       "title": "Select option"
     },
     {
@@ -618,10 +694,15 @@
             "path": "content"
           }
         ],
-        "targets": ["instanceId"],
+        "targets": [
+          "instanceId"
+        ],
         "tone": "blue"
       },
-      "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+      "requiredPermissions": [
+        "pal.browser.control",
+        "pal.network.fetch"
+      ],
       "title": "Close browser tab"
     },
     {
@@ -641,7 +722,9 @@
             "type": "string"
           }
         },
-        "required": ["instanceId"],
+        "required": [
+          "instanceId"
+        ],
         "type": "object"
       },
       "presentation": {
@@ -661,10 +744,15 @@
             "path": "content"
           }
         ],
-        "targets": ["instanceId"],
+        "targets": [
+          "instanceId"
+        ],
         "tone": "blue"
       },
-      "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+      "requiredPermissions": [
+        "pal.browser.control",
+        "pal.network.fetch"
+      ],
       "title": "Focus browser tab"
     },
     {
@@ -701,7 +789,10 @@
         "targets": [],
         "tone": "blue"
       },
-      "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+      "requiredPermissions": [
+        "pal.browser.control",
+        "pal.network.fetch"
+      ],
       "title": "List browser tabs"
     },
     {
@@ -746,7 +837,9 @@
             "type": "string"
           }
         },
-        "required": ["text"],
+        "required": [
+          "text"
+        ],
         "type": "object"
       },
       "presentation": {
@@ -760,10 +853,16 @@
             "path": "typed"
           }
         ],
-        "targets": ["selector", "targetText"],
+        "targets": [
+          "selector",
+          "targetText"
+        ],
         "tone": "blue"
       },
-      "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+      "requiredPermissions": [
+        "pal.browser.control",
+        "pal.network.fetch"
+      ],
       "title": "Type in browser"
     },
     {
@@ -788,7 +887,9 @@
             "type": "string"
           }
         },
-        "required": ["expression"],
+        "required": [
+          "expression"
+        ],
         "type": "object"
       },
       "presentation": {
@@ -808,10 +909,15 @@
             "path": "content"
           }
         ],
-        "targets": ["expression"],
+        "targets": [
+          "expression"
+        ],
         "tone": "blue"
       },
-      "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+      "requiredPermissions": [
+        "pal.browser.control",
+        "pal.network.fetch"
+      ],
       "title": "Evaluate page script"
     },
     {
@@ -846,7 +952,10 @@
             "type": "string"
           }
         },
-        "required": ["selector", "files"],
+        "required": [
+          "selector",
+          "files"
+        ],
         "type": "object"
       },
       "presentation": {
@@ -860,7 +969,9 @@
             "path": "uploaded"
           }
         ],
-        "targets": ["selector"],
+        "targets": [
+          "selector"
+        ],
         "tone": "blue"
       },
       "requiredPermissions": [
@@ -910,7 +1021,10 @@
         "targets": [],
         "tone": "blue"
       },
-      "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+      "requiredPermissions": [
+        "pal.browser.control",
+        "pal.network.fetch"
+      ],
       "title": "Browser back"
     },
     {
@@ -953,7 +1067,10 @@
         "targets": [],
         "tone": "blue"
       },
-      "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+      "requiredPermissions": [
+        "pal.browser.control",
+        "pal.network.fetch"
+      ],
       "title": "Browser forward"
     },
     {
@@ -1001,7 +1118,10 @@
         "targets": [],
         "tone": "blue"
       },
-      "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+      "requiredPermissions": [
+        "pal.browser.control",
+        "pal.network.fetch"
+      ],
       "title": "Read browser tab"
     }
   ],
@@ -1013,11 +1133,11 @@
   },
   "requiresHost": {
     "pal.plugin.providers.approval": 1,
-    "pal.commands.dispatch": 1,
-    "pal.commands.callable": 1,
-    "pal.context.commands": 1,
-    "pal.commands.execute": 1,
-    "pal.settings.commands": 1,
+    "pal.command.dispatch": 1,
+    "pal.command.callable": 1,
+    "pal.context.command": 1,
+    "pal.command.execute": 1,
+    "pal.command.settings": 1,
     "pal.plugin.providers": 1,
     "pal.plugin.declarations": 1,
     "pal.plugin.browser.navigation": 1,
@@ -1041,7 +1161,10 @@
           "title": "Create browser tab",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+          "requiredPermissions": [
+            "pal.browser.control",
+            "pal.network.fetch"
+          ],
           "inputSchema": {
             "additionalProperties": false,
             "properties": {
@@ -1065,7 +1188,10 @@
           "title": "Navigate browser",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+          "requiredPermissions": [
+            "pal.browser.control",
+            "pal.network.fetch"
+          ],
           "inputSchema": {
             "additionalProperties": false,
             "properties": {
@@ -1080,7 +1206,9 @@
                 "type": "string"
               }
             },
-            "required": ["url"],
+            "required": [
+              "url"
+            ],
             "type": "object"
           }
         },
@@ -1089,12 +1217,19 @@
           "title": "Click page",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+          "requiredPermissions": [
+            "pal.browser.control",
+            "pal.network.fetch"
+          ],
           "inputSchema": {
             "additionalProperties": false,
             "properties": {
               "button": {
-                "enum": ["left", "right", "middle"],
+                "enum": [
+                  "left",
+                  "right",
+                  "middle"
+                ],
                 "type": "string"
               },
               "instanceId": {
@@ -1127,7 +1262,10 @@
           "title": "Capture browser",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+          "requiredPermissions": [
+            "pal.browser.control",
+            "pal.network.fetch"
+          ],
           "inputSchema": {
             "additionalProperties": false,
             "properties": {
@@ -1146,7 +1284,10 @@
           "title": "Inspect browser",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+          "requiredPermissions": [
+            "pal.browser.control",
+            "pal.network.fetch"
+          ],
           "inputSchema": {
             "additionalProperties": false,
             "properties": {
@@ -1199,7 +1340,10 @@
           "title": "Wait for page",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+          "requiredPermissions": [
+            "pal.browser.control",
+            "pal.network.fetch"
+          ],
           "inputSchema": {
             "additionalProperties": false,
             "properties": {
@@ -1214,7 +1358,10 @@
                 "type": "string"
               },
               "state": {
-                "enum": ["visible", "hidden"],
+                "enum": [
+                  "visible",
+                  "hidden"
+                ],
                 "type": "string"
               },
               "text": {
@@ -1242,7 +1389,10 @@
           "title": "Press browser key",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+          "requiredPermissions": [
+            "pal.browser.control",
+            "pal.network.fetch"
+          ],
           "inputSchema": {
             "additionalProperties": false,
             "properties": {
@@ -1257,7 +1407,9 @@
                 "type": "string"
               }
             },
-            "required": ["key"],
+            "required": [
+              "key"
+            ],
             "type": "object"
           }
         },
@@ -1266,7 +1418,10 @@
           "title": "Hover page",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+          "requiredPermissions": [
+            "pal.browser.control",
+            "pal.network.fetch"
+          ],
           "inputSchema": {
             "additionalProperties": false,
             "properties": {
@@ -1300,7 +1455,10 @@
           "title": "Select option",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+          "requiredPermissions": [
+            "pal.browser.control",
+            "pal.network.fetch"
+          ],
           "inputSchema": {
             "additionalProperties": false,
             "properties": {
@@ -1334,7 +1492,9 @@
                 "type": "array"
               }
             },
-            "required": ["values"],
+            "required": [
+              "values"
+            ],
             "type": "object"
           }
         },
@@ -1343,7 +1503,10 @@
           "title": "Close browser tab",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+          "requiredPermissions": [
+            "pal.browser.control",
+            "pal.network.fetch"
+          ],
           "inputSchema": {
             "additionalProperties": false,
             "properties": {
@@ -1362,7 +1525,10 @@
           "title": "Focus browser tab",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+          "requiredPermissions": [
+            "pal.browser.control",
+            "pal.network.fetch"
+          ],
           "inputSchema": {
             "additionalProperties": false,
             "properties": {
@@ -1372,7 +1538,9 @@
                 "type": "string"
               }
             },
-            "required": ["instanceId"],
+            "required": [
+              "instanceId"
+            ],
             "type": "object"
           }
         },
@@ -1381,7 +1549,10 @@
           "title": "List browser tabs",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+          "requiredPermissions": [
+            "pal.browser.control",
+            "pal.network.fetch"
+          ],
           "inputSchema": {
             "additionalProperties": false,
             "properties": {
@@ -1400,7 +1571,10 @@
           "title": "Type in browser",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+          "requiredPermissions": [
+            "pal.browser.control",
+            "pal.network.fetch"
+          ],
           "inputSchema": {
             "additionalProperties": false,
             "properties": {
@@ -1435,7 +1609,9 @@
                 "type": "string"
               }
             },
-            "required": ["text"],
+            "required": [
+              "text"
+            ],
             "type": "object"
           }
         },
@@ -1444,7 +1620,10 @@
           "title": "Evaluate page script",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+          "requiredPermissions": [
+            "pal.browser.control",
+            "pal.network.fetch"
+          ],
           "inputSchema": {
             "additionalProperties": false,
             "properties": {
@@ -1459,7 +1638,9 @@
                 "type": "string"
               }
             },
-            "required": ["expression"],
+            "required": [
+              "expression"
+            ],
             "type": "object"
           }
         },
@@ -1497,7 +1678,10 @@
                 "type": "string"
               }
             },
-            "required": ["selector", "files"],
+            "required": [
+              "selector",
+              "files"
+            ],
             "type": "object"
           }
         },
@@ -1506,7 +1690,10 @@
           "title": "Browser back",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+          "requiredPermissions": [
+            "pal.browser.control",
+            "pal.network.fetch"
+          ],
           "inputSchema": {
             "additionalProperties": false,
             "properties": {
@@ -1525,7 +1712,10 @@
           "title": "Browser forward",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+          "requiredPermissions": [
+            "pal.browser.control",
+            "pal.network.fetch"
+          ],
           "inputSchema": {
             "additionalProperties": false,
             "properties": {
@@ -1544,7 +1734,10 @@
           "title": "Read browser tab",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.browser.control", "pal.network.fetch"],
+          "requiredPermissions": [
+            "pal.browser.control",
+            "pal.network.fetch"
+          ],
           "inputSchema": {
             "additionalProperties": false,
             "properties": {
@@ -1592,11 +1785,16 @@
                         "minimum": 0
                       }
                     },
-                    "required": ["since"],
+                    "required": [
+                      "since"
+                    ],
                     "additionalProperties": false
                   }
                 },
-                "required": ["operation", "value"],
+                "required": [
+                  "operation",
+                  "value"
+                ],
                 "additionalProperties": false
               },
               {
@@ -1617,11 +1815,17 @@
                         "maxLength": 4000
                       }
                     },
-                    "required": ["from", "to"],
+                    "required": [
+                      "from",
+                      "to"
+                    ],
                     "additionalProperties": false
                   }
                 },
-                "required": ["operation", "value"],
+                "required": [
+                  "operation",
+                  "value"
+                ],
                 "additionalProperties": false
               },
               {
@@ -1634,7 +1838,10 @@
                     "type": "object",
                     "properties": {
                       "kind": {
-                        "enum": ["bookmarks", "passwords"]
+                        "enum": [
+                          "bookmarks",
+                          "passwords"
+                        ]
                       },
                       "ids": {
                         "type": "array",
@@ -1645,11 +1852,17 @@
                         }
                       }
                     },
-                    "required": ["kind", "ids"],
+                    "required": [
+                      "kind",
+                      "ids"
+                    ],
                     "additionalProperties": false
                   }
                 },
-                "required": ["operation", "value"],
+                "required": [
+                  "operation",
+                  "value"
+                ],
                 "additionalProperties": false
               },
               {
@@ -1678,11 +1891,16 @@
                         "maxLength": 4000
                       }
                     },
-                    "required": ["url"],
+                    "required": [
+                      "url"
+                    ],
                     "additionalProperties": false
                   }
                 },
-                "required": ["operation", "value"],
+                "required": [
+                  "operation",
+                  "value"
+                ],
                 "additionalProperties": false
               },
               {
@@ -1711,11 +1929,18 @@
                         "maxLength": 4000
                       }
                     },
-                    "required": ["origin", "username", "password"],
+                    "required": [
+                      "origin",
+                      "username",
+                      "password"
+                    ],
                     "additionalProperties": false
                   }
                 },
-                "required": ["operation", "value"],
+                "required": [
+                  "operation",
+                  "value"
+                ],
                 "additionalProperties": false
               },
               {
@@ -1741,7 +1966,10 @@
                     "additionalProperties": false
                   }
                 },
-                "required": ["operation", "value"],
+                "required": [
+                  "operation",
+                  "value"
+                ],
                 "additionalProperties": false
               },
               {
@@ -1769,7 +1997,10 @@
                     "additionalProperties": false
                   }
                 },
-                "required": ["operation", "value"],
+                "required": [
+                  "operation",
+                  "value"
+                ],
                 "additionalProperties": false
               },
               {
@@ -1786,11 +2017,16 @@
                         "maxLength": 4000
                       }
                     },
-                    "required": ["path"],
+                    "required": [
+                      "path"
+                    ],
                     "additionalProperties": false
                   }
                 },
-                "required": ["operation", "value"],
+                "required": [
+                  "operation",
+                  "value"
+                ],
                 "additionalProperties": false
               },
               {
@@ -1806,7 +2042,10 @@
                     "additionalProperties": false
                   }
                 },
-                "required": ["operation", "value"],
+                "required": [
+                  "operation",
+                  "value"
+                ],
                 "additionalProperties": false
               },
               {
@@ -1836,7 +2075,10 @@
                     "additionalProperties": false
                   }
                 },
-                "required": ["operation", "value"],
+                "required": [
+                  "operation",
+                  "value"
+                ],
                 "additionalProperties": false
               },
               {
@@ -1862,11 +2104,16 @@
                         "type": "boolean"
                       }
                     },
-                    "required": ["source"],
+                    "required": [
+                      "source"
+                    ],
                     "additionalProperties": false
                   }
                 },
-                "required": ["operation", "value"],
+                "required": [
+                  "operation",
+                  "value"
+                ],
                 "additionalProperties": false
               },
               {
@@ -1883,11 +2130,16 @@
                         "maxLength": 4000
                       }
                     },
-                    "required": ["path"],
+                    "required": [
+                      "path"
+                    ],
                     "additionalProperties": false
                   }
                 },
-                "required": ["operation", "value"],
+                "required": [
+                  "operation",
+                  "value"
+                ],
                 "additionalProperties": false
               },
               {
@@ -1904,11 +2156,16 @@
                         "maxLength": 4000
                       }
                     },
-                    "required": ["id"],
+                    "required": [
+                      "id"
+                    ],
                     "additionalProperties": false
                   }
                 },
-                "required": ["operation", "value"],
+                "required": [
+                  "operation",
+                  "value"
+                ],
                 "additionalProperties": false
               },
               {
@@ -1925,11 +2182,16 @@
                         "maxLength": 4000
                       }
                     },
-                    "required": ["id"],
+                    "required": [
+                      "id"
+                    ],
                     "additionalProperties": false
                   }
                 },
-                "required": ["operation", "value"],
+                "required": [
+                  "operation",
+                  "value"
+                ],
                 "additionalProperties": false
               },
               {
@@ -1946,11 +2208,16 @@
                         "maxLength": 4000
                       }
                     },
-                    "required": ["id"],
+                    "required": [
+                      "id"
+                    ],
                     "additionalProperties": false
                   }
                 },
-                "required": ["operation", "value"],
+                "required": [
+                  "operation",
+                  "value"
+                ],
                 "additionalProperties": false
               }
             ]
@@ -1961,7 +2228,10 @@
           "title": "Open web page",
           "visibility": "public",
           "readOnly": false,
-          "requiredPermissions": ["pal.network.fetch", "pal.browser.control"],
+          "requiredPermissions": [
+            "pal.network.fetch",
+            "pal.browser.control"
+          ],
           "inputSchema": {
             "type": "object",
             "properties": {
@@ -1974,7 +2244,9 @@
                 "maxLength": 4000
               }
             },
-            "required": ["url"],
+            "required": [
+              "url"
+            ],
             "additionalProperties": false
           }
         },
@@ -1983,7 +2255,10 @@
           "title": "New browser tab",
           "visibility": "private",
           "readOnly": false,
-          "requiredPermissions": ["pal.network.fetch", "pal.browser.control"],
+          "requiredPermissions": [
+            "pal.network.fetch",
+            "pal.browser.control"
+          ],
           "inputSchema": {
             "type": "object",
             "properties": {},
@@ -1996,7 +2271,10 @@
           "title": "Record visit",
           "visibility": "private",
           "readOnly": false,
-          "requiredPermissions": ["pal.storage.read", "pal.storage.write"],
+          "requiredPermissions": [
+            "pal.storage.read",
+            "pal.storage.write"
+          ],
           "inputSchema": {
             "type": "object",
             "properties": {
@@ -2013,7 +2291,9 @@
                 "maxLength": 32768
               }
             },
-            "required": ["url"],
+            "required": [
+              "url"
+            ],
             "additionalProperties": false
           }
         },
@@ -2022,7 +2302,10 @@
           "title": "Bookmark page",
           "visibility": "private",
           "readOnly": false,
-          "requiredPermissions": ["pal.storage.read", "pal.storage.write"],
+          "requiredPermissions": [
+            "pal.storage.read",
+            "pal.storage.write"
+          ],
           "inputSchema": {
             "type": "object",
             "properties": {
@@ -2036,7 +2319,10 @@
               },
               "operation": {
                 "type": "string",
-                "enum": ["save", "remove"]
+                "enum": [
+                  "save",
+                  "remove"
+                ]
               },
               "id": {
                 "type": "string",
@@ -2051,7 +2337,9 @@
                 "maxLength": 32768
               }
             },
-            "required": ["url"],
+            "required": [
+              "url"
+            ],
             "additionalProperties": false
           }
         }
@@ -2074,14 +2362,50 @@
       ]
     },
     "consumes": {
-      "host": [
+      "commands": [
         {
-          "id": "pal.toast",
+          "id": "pal.toast.show",
           "reason": "Report browser operation results"
         },
         {
-          "id": "pal.dialog",
+          "id": "pal.host.interaction.close",
+          "reason": "Report browser operation results"
+        },
+        {
+          "id": "pal.host.interaction.list",
+          "reason": "Report browser operation results"
+        },
+        {
+          "id": "pal.host.interaction.respond",
+          "reason": "Report browser operation results"
+        },
+        {
+          "id": "pal.host.interaction.action",
+          "reason": "Report browser operation results"
+        },
+        {
+          "id": "pal.dialog.alert",
           "reason": "Confirm closing other browser tabs when disabling multiple tabs"
+        },
+        {
+          "id": "pal.dialog.confirm",
+          "reason": "Confirm closing other browser tabs when disabling multiple tabs"
+        },
+        {
+          "id": "pal.dialog.prompt",
+          "reason": "Confirm closing other browser tabs when disabling multiple tabs"
+        },
+        {
+          "id": "pal.frontend.context",
+          "reason": "使用已声明前端的宿主能力"
+        },
+        {
+          "id": "pal.frontend.open-settings",
+          "reason": "使用已声明前端的宿主能力"
+        },
+        {
+          "id": "pal.frontend.settings",
+          "reason": "使用已声明前端的宿主能力"
         }
       ]
     }
