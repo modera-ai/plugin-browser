@@ -35,7 +35,6 @@
     }
   },
   "settings": {
-    "group": "connections",
     "locales": {
       "zh-CN": {
         "title": "浏览器设置"
