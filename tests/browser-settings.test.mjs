@@ -59,8 +59,10 @@ try {
       },
       settings: {
         pickFile: async () => "fixture.json",
-        action: async (_, raw) => {
-          const { operation, value: v } = JSON.parse(raw);
+      },
+      command: {
+        execute: async (id, { operation, value: v = {} }) => {
+          if (id !== "pal.browser.data") throw Error("Unexpected command: " + id);
           if (operation === "dataSummary") {
             await new Promise((done) => setTimeout(done, 80));
             if (window.failLoad) throw Error("fixture unavailable");
